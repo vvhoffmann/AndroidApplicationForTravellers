@@ -44,7 +44,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     public static HashMap<Marker, LatLng> markers = new HashMap<>();
     private FusedLocationProviderClient fusedLocationClient;
-    private Marker currentPositionMarker;
+    public static Marker currentPositionMarker;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,14 +55,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Inicjalizacja Places API
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "${PLACES_API_KEY}");
+            Places.initialize(requireContext(), "AIzaSyAysSR_bO84Y4HF7NLNwkFjpGIN1CnfMSM");  // Podstaw swój klucz API
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         // Inicjalizacja MapFragment
@@ -84,12 +83,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                     if (place.getLatLng() != null) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(place.getLatLng())
+                                .title(place.getName())
+                                .icon(BitmapDescriptorFactory.defaultMarker());
+                        Marker marker = mMap.addMarker(markerOptions);
+                        markers.put(marker, new LatLng(marker.getPosition().latitude, marker.getPosition().longitude));
                     }
                 }
 
                 @Override
                 public void onError(@NonNull Status status) {
                     Log.i(TAG, "An error occurred: " + status);
+                    Toast.makeText(requireContext(), "An error occurred while selecting the place : " + status.getStatusMessage() , Toast.LENGTH_SHORT).show();
                 }
             });
         }

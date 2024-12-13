@@ -9,4 +9,5 @@
     <string name="route">Final Route</string>
     <string name="calculate">Calculate the suboptimal route</string>
     <string name="resultTitle">Your Route:</string>
+    <string name="current_location">Current location:</string>
 </resources>

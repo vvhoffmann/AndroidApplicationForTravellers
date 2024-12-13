@@ -32,6 +32,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAysSR_bO84Y4HF7NLNwkFjpGIN1CnfMSM" />
         <meta-data
+            android:name="com.google.android.places.API_KEY"
+            android:value="AIzaSyAysSR_bO84Y4HF7NLNwkFjpGIN1CnfMSM" />
+        <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 

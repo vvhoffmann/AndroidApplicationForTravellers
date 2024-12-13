@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MarkersListFragment extends Fragment {
     private ListView listView ;
     private HashMap<Marker, LatLng> markers;
+    private Marker currentPositionMarker;
+    private TextView tvCurrentMarker;
 
 
     @Nullable
@@ -34,6 +37,9 @@ public class MarkersListFragment extends Fragment {
 
         // Find the ListView
         ListView listView = view.findViewById(R.id.listView);
+        TextView tvCurrentMarker = view.findViewById(R.id.tvCurrentMarker);
+        currentPositionMarker = MapFragment.currentPositionMarker;
+        tvCurrentMarker.setText("[ " + currentPositionMarker.getPosition().latitude + " , " + currentPositionMarker.getPosition().longitude + " ]");
 
 
         AtomicInteger counter = new AtomicInteger(1);

@@ -2,15 +2,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MarkersListFragment"
-    android:background="@color/quantum_bluegrey50">
+    android:orientation="vertical"
+    android:padding="16dp">
 
+    <!-- Pierwszy TextView -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Twoje miejsca:"
+        android:fontFamily="@font/adlam_display"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:padding="12dp"
+        android:paddingBottom="8dp"/>
+
+    <!-- Drugi TextView -->
+    <TextView
+        android:id="@+id/tvCurrentMarkerDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@color/quantum_bluegrey300"
+        android:padding="5dp"
+        android:paddingBottom="8dp"
+        android:text="@string/current_location"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvCurrentMarker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="16sp"
+        android:text=""
+        android:background="@color/quantum_bluegrey200"/>
+
+    <!-- ListView -->
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/quantum_bluegrey50"
+        android:divider="@android:color/background_light"
+        android:dividerHeight="0.5dp"
+        android:paddingBottom="8dp" />
+
+    <!-- Czwarty TextView -->
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:background="@color/quantum_bluegrey100"
-        />
+        android:textSize="14sp"
+        android:paddingTop="8dp"
+        android:padding="16dp"/>
+
 </LinearLayout>
