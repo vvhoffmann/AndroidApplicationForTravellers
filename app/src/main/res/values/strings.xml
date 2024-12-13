@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">BachelorThesisApp</string>
+    <string name="description">This application is going to provide a solution to the problem of finding the best route for people doing city breaks. Its mission is to improve the  day planning aspect by calculating the suboptimal way of visiting every wanted point on the map</string>
+    <string name="title">Welcome to bachelor thesis application</string>
+    <string name="btnTxt">To the app</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="list">Markers list</string>
+    <string name="map">Map</string>
+    <string name="route">Final Route</string>
+    <string name="calculate">Calculate the suboptimal route</string>
+    <string name="resultTitle">Your Route:</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_map"
+        android:title="@string/map"
+        android:icon="@drawable/baseline_map_24"
+        android:orderInCategory="1" />
+
+    <item
+        android:id="@+id/nav_list"
+        android:title="@string/list"
+        android:icon="@drawable/baseline_list_alt_24"
+        android:orderInCategory="2" />
+
+    <item
+        android:id="@+id/nav_route"
+        android:title="@string/route"
+        android:icon="@drawable/baseline_route_24"
+        android:orderInCategory="2" />
+</menu>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/quantum_bluegrey200"
+>
+
+    <!-- Title and Calculate Button -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/adlam_display"
+        android:padding="16dp"
+        android:text="Let's prepare a plan for your city tour"
+        android:textSize="21dp"
+        android:background="@color/quantum_bluegrey400"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/buttonCalculate"
+        android:layout_width="277dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:backgroundTint="@color/quantum_bluegrey600"
+        android:textColor="@color/white"
+        android:padding="16dp"
+        android:text="@string/calculate"
+        android:enabled="false"
+        />
+
+    <!-- ListView with result markers order-->
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:background="@color/quantum_bluegrey50"
+        android:divider="@android:color/background_light"
+        android:dividerHeight="1dp" />
+
+    <TextView
+        android:id="@+id/tvResultTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/quantum_bluegrey400"
+        android:textColor="@color/white"
+        android:text="@string/resultTitle"
+        android:textSize="20dp"
+        android:padding="16dp"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/tvResultDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="18sp"
+        android:background="@color/quantum_bluegrey100"
+        android:padding="28dp" />
+
+    <Button
+        android:id="@+id/buttonShowMap"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:backgroundTint="@color/quantum_bluegrey600"
+        android:padding="16dp"
+        android:text="Show result on the map"
+        android:textColor="@color/white"
+        android:visibility="invisible" />
+
+</LinearLayout>
