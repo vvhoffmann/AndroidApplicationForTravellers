@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp;
+package com.example.bachelorthesisapp.mapsActivity;
 
 import static android.content.ContentValues.TAG;
 
@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.bachelorthesisapp.R;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -41,7 +42,7 @@ import java.util.Locale;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    public static GoogleMap mMap;
     public static HashMap<Marker, LatLng> markers = new HashMap<>();
     private FusedLocationProviderClient fusedLocationClient;
     public static Marker currentPositionMarker;
@@ -65,9 +66,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         // Inicjalizacja MapFragment
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+            mapFragment.getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
 
         // Inicjalizacja AutocompleteSupportFragment

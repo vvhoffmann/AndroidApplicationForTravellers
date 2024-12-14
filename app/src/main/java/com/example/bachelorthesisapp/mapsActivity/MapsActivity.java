@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp;
+package com.example.bachelorthesisapp.mapsActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.bachelorthesisapp.R;
 import com.example.bachelorthesisapp.databinding.ActivityMapsBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

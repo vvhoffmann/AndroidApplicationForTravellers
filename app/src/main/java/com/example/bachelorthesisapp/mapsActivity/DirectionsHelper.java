@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp;
+package com.example.bachelorthesisapp.mapsActivity;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.DirectionsApi;
@@ -13,7 +13,7 @@ public class DirectionsHelper {
 
     public DirectionsHelper() {
         context = new GeoApiContext.Builder()
-                .apiKey("${PLACES_API_KEY}")
+                .apiKey("AIzaSyAysSR_bO84Y4HF7NLNwkFjpGIN1CnfMSM")
                 .build();
     }
 
