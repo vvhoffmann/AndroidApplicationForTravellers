@@ -10,12 +10,12 @@
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/twoje_miejsca"
-        android:fontFamily="@font/adlam_display"
-        android:textAlignment="center"
-        android:textSize="24sp"
+        android:fontFamily="sans-serif-black"
         android:padding="12dp"
-        android:paddingBottom="8dp"/>
+        android:paddingBottom="8dp"
+        android:text="@string/twoje_miejsca"
+        android:textAlignment="center"
+        android:textSize="21dp" />
 
     <!-- Drugi TextView -->
     <TextView

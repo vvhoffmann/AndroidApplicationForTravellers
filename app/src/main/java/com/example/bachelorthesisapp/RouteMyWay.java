@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.bachelorthesisapp.mapsActivity.MapsActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class RouteMyWay extends AppCompatActivity {
 
     Button btnToApp;
     TextView title;
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Włączanie EdgeToEdge dla aplikacji
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_route_my_way);
 
         // Ustawienie paddingu w zależności od systemowych pasków
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -37,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Inicjalizacja komponentów UI
         title = findViewById(R.id.tvTitle);
-        description = findViewById(R.id.tvDescription);
+        description = findViewById(R.id.tvDesc);
         btnToApp = findViewById(R.id.btnToApp);
 
         // Obsługa kliknięcia na przycisk
         btnToApp.setOnClickListener(v -> {
             // Wyświetlenie komunikatu powitalnego
-            showToast("Welcome to the application!!");
+            showToast("Witaj w aplikacji!!");
 
             // Uruchomienie nowej aktywności
             navigateToMapsActivity();
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Funkcja do wyświetlania toastów
     private void showToast(String message) {
-        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RouteMyWay.this, message, Toast.LENGTH_SHORT).show();
     }
 
     // Funkcja do przejścia do MapsActivity

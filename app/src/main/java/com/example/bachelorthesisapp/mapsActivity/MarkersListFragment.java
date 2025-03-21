@@ -21,13 +21,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MarkersListFragment extends Fragment {
     private ListView listView;
     private HashMap<Marker, LatLng> markers;
-    private Marker currentPositionMarker;
+    public static Marker currentPositionMarker;
     private TextView tvCurrentMarker;
     private GoogleMap mMap;
     private Marker selectedMarker;

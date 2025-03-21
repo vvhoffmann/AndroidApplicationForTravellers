@@ -57,13 +57,13 @@ public class MapsActivity extends FragmentActivity {
 
     private void showFragment(Fragment selectedFragment) {
         if (selectedFragment == null || selectedFragment == getCurrentFragment()) {
-            return; // Unikamy zmiany na ten sam fragment
+            return;
         }
 
-        getSupportFragmentManager()
+        executorService.execute(() -> getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, selectedFragment)
-                .commitAllowingStateLoss(); // Zapobiega IllegalStateException podczas zapisu stanu
+                .commitAllowingStateLoss()); // Uruchomienie na osobnym wątku
     }
 
     // Sprawdzenie uprawnień lokalizacji

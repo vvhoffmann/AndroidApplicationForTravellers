@@ -1,6 +1,7 @@
 package com.example.bachelorthesisapp.mapsActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +27,13 @@ public class RouteFragment extends Fragment {
     private HashMap<Marker, LatLng> markers;
     private ArrayList<LatLng> points = new ArrayList<>();
 
+    private double[][] distanceMatrix;
+
     Button btnCalculate;
     Button btnShowMap;
+    Button btnEditPoints;
     TextView tvTitle;
-    TextView tvResult;
+    TextView tvResultTitle;
     TextView tvResultDescription;
 
 
@@ -45,24 +49,39 @@ public class RouteFragment extends Fragment {
         listView = view.findViewById(R.id.list_view);
         btnCalculate = view.findViewById(R.id.buttonCalculate);
         btnShowMap = view.findViewById(R.id.buttonShowMap);
+        btnEditPoints = view.findViewById(R.id.btnEditPoints);
         tvTitle = view.findViewById(R.id.tvTitle);
-        tvResult = view.findViewById(R.id.tvResultTitle);
+        tvResultTitle = view.findViewById(R.id.tvResultTitle);
         tvResultDescription = view.findViewById(R.id.tvResultDescription);
 
-
+        markers.put(MarkersListFragment.currentPositionMarker, MarkersListFragment.currentPositionMarker.getPosition());
         markers = MapFragment.markers;
-        if(markers.size() > 1)
-            points.addAll(markers.values());
 
-        if (markers.size() > 1) {
+        if(markers.size() > 1)
             btnCalculate.setEnabled(true);
-            points.addAll(markers.values());
-        }
+
 
         btnCalculate.setOnClickListener(v -> {
-            tvResult.setVisibility(View.VISIBLE);
+            points.addAll(markers.values());
+
+            new Thread(() -> {
+                try {
+                    distanceMatrix = DirectionsHelper.getDistanceArray(points);
+
+                    for (int i = 0; i < points.size(); i++) {
+                        for (int j = 0; j < points.size(); j++) {
+                            Log.d("DistanceMatrix", "Dystans [" + i + "][" + j + "]: " + distanceMatrix[i][j] + " km");
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e("Directions", "Błąd: " + e.getMessage());
+                }
+            }).start();
+
+            tvResultTitle.setVisibility(View.VISIBLE);
             tvResultDescription.setText("Wynik: ");
             btnShowMap.setVisibility(View.VISIBLE);
+            btnEditPoints.setVisibility(View.VISIBLE);
         });
 
         return view;

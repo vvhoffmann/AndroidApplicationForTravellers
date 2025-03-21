@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,10 +29,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.CircularBounds;
+import com.google.android.libraries.places.api.model.LocationRestriction;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
@@ -78,7 +83,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         if (autocompleteFragment != null) {
+
             autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+            autocompleteFragment.setHint("Wyszukaj miejsce");
+
+            // Create a circular bounds restriction
+            if (currentPositionMarker != null)
+                autocompleteFragment.setLocationRestriction(CircularBounds.newInstance(currentPositionMarker.getPosition(), 20000));
+
             autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                 @Override
                 public void onPlaceSelected(@NonNull Place place) {
@@ -98,7 +110,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 @Override
                 public void onError(@NonNull Status status) {
                     Log.i(TAG, "An error occurred: " + status);
-                    Toast.makeText(requireContext(), "An error occurred while selecting the place : " + status.getStatusMessage() , Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -145,17 +156,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Error getting location", e);
-            Toast.makeText(requireContext(), "Nie udało się pobrać lokalizacji", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Nie udało się pobrać lokalizacji. Pierwszy zaznaczony przez ciebie punkt będzie twoją lokalizacją początkową.", Toast.LENGTH_SHORT).show();
         });
 
         // Obsługa kliknięcia na mapę
         mMap.setOnMapClickListener(latLng -> {
             String placeDescription = getPlaceDescription(latLng);
-
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title(placeDescription));
-            markers.put(marker, latLng);
+            if (currentPositionMarker == null) {
+                currentPositionMarker = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("Twoja lokalizacja")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            } else {
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(placeDescription));
+                markers.put(marker, latLng);
+            }
         });
     }
 

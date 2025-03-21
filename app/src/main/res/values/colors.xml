@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="button_enabled">#546e7a</color> <!-- Fioletowy -->
+    <color name="button_disabled">#b0bec5</color> <!-- Szary -->
 </resources>

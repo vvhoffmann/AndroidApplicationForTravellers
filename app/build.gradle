@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -42,10 +44,11 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.play.services.location
     implementation libs.play.services.maps.v1802
+    implementation libs.places.v350
     implementation libs.google.maps.services
-    implementation libs.places.v320
     implementation libs.support.annotations
     implementation libs.cardview
+    implementation libs.firebase.crashlytics
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

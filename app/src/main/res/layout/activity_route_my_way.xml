@@ -5,19 +5,18 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".RouteMyWay">
 
     <Button
         android:id="@+id/btnToApp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="201dp"
+        android:layout_height="45dp"
         android:text="@string/btnTxt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.841"
+        app:layout_constraintVertical_bias="0.801"
         tools:ignore="MissingConstraints" />
 
     <TextView
@@ -28,28 +27,31 @@
         android:text="@string/title"
         android:textAlignment="center"
         android:textColor="#A71DC8"
-        android:textSize="28sp"
+        android:textSize="49sp"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.615"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.159"
+        app:layout_constraintVertical_bias="0.246"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="366dp"
-        android:layout_height="198dp"
-        android:fontFamily="sans-serif-light"
-        android:text="@string/description"
-        android:textSize="16sp"
+        android:id="@+id/tvDesc"
+        android:layout_width="341dp"
+        android:layout_height="144dp"
+        android:fontFamily="sans-serif-condensed"
+        android:text="@string/desc"
+        android:textAlignment="center"
+        android:textColor="#B279D9"
+        android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.589" />
+        app:layout_constraintVertical_bias="0.592"
+        tools:ignore="MissingConstraints" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,14 +1,17 @@
 <resources>
-    <string name="app_name">BachelorThesisApp</string>
-    <string name="description">This application is going to provide a solution to the problem of finding the best route for people doing city breaks. Its mission is to improve the  day planning aspect by calculating the suboptimal way of visiting every wanted point on the map</string>
-    <string name="title">Welcome to bachelor thesis application</string>
-    <string name="btnTxt">To the app</string>
+    <string name="app_name">RouteMyWay</string>
+    <string name="description">Aplikacja jest wynikiem mojej pracy inżynierskiej, która bada algorytmy rozwiązujące problem komiwojażera. Celem mojej aplikacji jest usprawnienie planowania zwiedzania miasto pieszo. Pomaga w wyznaczeniu najlepszej możliwej trasy na podstawie zadanych przez ciebie punktów.</string>
+    <string name="title">RouteMyWay</string>
+    <string name="btnTxt">START</string>
+    <string name="author">Autorka :  Wiktoria Hoffmann</string>
     <string name="title_activity_maps">MapsActivity</string>
-    <string name="list">Markers list</string>
-    <string name="map">Map</string>
-    <string name="route">Final Route</string>
-    <string name="calculate">Calculate the suboptimal route</string>
-    <string name="resultTitle">Your Route:</string>
-    <string name="current_location">Current location:</string>
+    <string name="list">Lista miejsc</string>
+    <string name="map">Mapa</string>
+    <string name="route">Wyznaczanie drogi</string>
+    <string name="calculate">Oblicz trasę</string>
+    <string name="resultTitle">Długość:</string>
+    <string name="current_location">Obecna lokalizacja:</string>
     <string name="twoje_miejsca">Twoje miejsca:</string>
+    <string name="titleCalculate">Wyznacz trasę podróży:</string>
+    <string name="desc">Aplikacja wspomagająca wyznaczenie pseudooptymalnej trasy na mapie wśród zadanych punktów</string>
 </resources>
