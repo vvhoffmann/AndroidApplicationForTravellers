@@ -1,11 +1,7 @@
 package com.example.bachelorthesisapp.mapsActivity;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
-import com.google.maps.model.DirectionsLeg;
-import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,7 +29,6 @@ public class DirectionsHelper {
         ExecutorService executor = Executors.newFixedThreadPool(10);
         ArrayList<Future<Double>> results = new ArrayList<>();
 
-        // Tworzymy zadania dla każdej pary punktów (i, j)
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 final int row = i, col = j;
@@ -52,6 +47,8 @@ public class DirectionsHelper {
         executor.shutdown(); // Zatrzymujemy wątki
         return dist;
     }
+
+
 
     public static double getWalkingRoute(LatLng origin, LatLng destination) throws Exception {
         String requestUrl = "https://maps.googleapis.com/maps/api/directions/json?origin="
@@ -94,6 +91,7 @@ public class DirectionsHelper {
             throw new Exception("Brak trasy w odpowiedzi API");
         }
     }
+
 
 
 //    public void displayRoute(DirectionsResult result, RouteFragment context) {

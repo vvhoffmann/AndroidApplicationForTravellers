@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,21 +16,20 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.bachelorthesisapp.R;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import java.util.Arrays;
+import java.lang.reflect.Array;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 public class MarkersListFragment extends Fragment {
     private ListView listView;
-    private HashMap<Marker, LatLng> markers;
+    private HashMap<LatLng,Marker> markers;
     public static Marker currentPositionMarker;
-    private TextView tvCurrentMarker;
-    private GoogleMap mMap;
     private Marker selectedMarker;
+
+    private String[] items;
 
 
     @Nullable
@@ -42,16 +40,14 @@ public class MarkersListFragment extends Fragment {
 
         markers = MapFragment.markers;
 
+
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
         // Initialize components
-        ListView listView = view.findViewById(R.id.listView);
-        TextView tvCurrentMarker = view.findViewById(R.id.tvCurrentMarker);
+        listView = view.findViewById(R.id.listView);
         Button btnRemoveMarker = view.findViewById(R.id.btnRemoveMarker);
 
         currentPositionMarker = MapFragment.currentPositionMarker;
-        tvCurrentMarker.setText("[ " + currentPositionMarker.getPosition().latitude + " , " +
-                currentPositionMarker.getPosition().longitude + " ]");
 
         refreshList(listView);
 
@@ -82,11 +78,9 @@ public class MarkersListFragment extends Fragment {
     }
 
     private void refreshList(ListView listView) {
-        // Sample data for the ListView
-        String[] items = markers.keySet()
-                .stream()
-                .map(marker -> createStringFromMarker(marker)).toArray(String[]::new);
-
+        items = new String[markers.size() + 1];
+        items[0] = createStringFromMarker(currentPositionMarker);
+        System.arraycopy(markers.keySet().stream().map(latlng -> createStringFromMarker(Objects.requireNonNull(markers.get(latlng)))).toArray(String[]::new), 0, items, 1, items.length - 1);
         // Set up an adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);
@@ -95,8 +89,8 @@ public class MarkersListFragment extends Fragment {
 
     // Funkcja do usuwania ostatniego markera
     private void removeMarker(Marker selectedMarker) {
-        if (!markers.isEmpty() && markers.containsKey(selectedMarker)) {
-            markers.remove(selectedMarker); // Usunięcie markera z listy
+        if (!markers.isEmpty() && markers.containsKey(selectedMarker.getPosition())) {
+            markers.remove(selectedMarker.getPosition()); // Usunięcie markera z listy
             Toast.makeText(requireContext(), "Marker usunięty", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(requireContext(), "Brak markerów do usunięcia", Toast.LENGTH_SHORT).show();
@@ -117,10 +111,10 @@ public class MarkersListFragment extends Fragment {
         double lat = Double.parseDouble(coordinates[0].trim());
         double lng = Double.parseDouble(coordinates[1].trim());
 
-        LatLng latLng = new LatLng(lat, lng);
-        for (Map.Entry<Marker, LatLng> entry : markers.entrySet()) {
-            if (entry.getValue().equals(latLng)) {
-                return entry.getKey();
+        LatLng position = new LatLng(lat, lng);
+        for (LatLng latLng : markers.keySet()) {
+            if (latLng.equals(position)) {
+                return markers.get(position);
             }
         }
         return null;

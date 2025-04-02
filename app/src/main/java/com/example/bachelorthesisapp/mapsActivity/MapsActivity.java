@@ -38,7 +38,7 @@ public class MapsActivity extends FragmentActivity {
 
         // Ustawienie początkowego fragmentu
         if (savedInstanceState == null) {
-            showFragment(mapFragment);
+            replaceFragment(mapFragment);
         }
 
         // Ustawienie słuchacza nawigacji
@@ -90,7 +90,8 @@ public class MapsActivity extends FragmentActivity {
                         selectedFragment = mapFragment;
                         break;
                 }
-                showFragment(selectedFragment);
+
+                replaceFragment(selectedFragment);
                 return true;
             };
 
@@ -103,5 +104,12 @@ public class MapsActivity extends FragmentActivity {
     public void onDestroy() {
         super.onDestroy();
         executorService.shutdown(); // Zamknięcie ExecutorService, aby uniknąć wycieków pamięci
+    }
+
+    public void replaceFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null) // Pozwala wrócić do poprzedniego ekranu
+                .commit();
     }
 }

@@ -14,4 +14,9 @@
     <string name="twoje_miejsca">Twoje miejsca:</string>
     <string name="titleCalculate">Wyznacz trasę podróży:</string>
     <string name="desc">Aplikacja wspomagająca wyznaczenie pseudooptymalnej trasy na mapie wśród zadanych punktów</string>
+    <string name="usun_marker">Usuń Marker</string>
+    <string name="pokaz_tras">Pokaż trasę</string>
+    <string name="pokaz_trase_na_mapie">Pokaż trasę na mapie</string>
+    <string name="edytuj_punkty">Edytuj Punkty</string>
+    <string name="location_permission">Udostępnianie lokalizacji</string>
 </resources>

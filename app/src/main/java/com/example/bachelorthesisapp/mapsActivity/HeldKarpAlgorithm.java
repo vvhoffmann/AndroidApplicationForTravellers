@@ -1,6 +1,5 @@
 package com.example.bachelorthesisapp.mapsActivity;
 
-import com.example.bachelorthesisapp.PointUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -10,8 +9,10 @@ import java.util.Collections;
 public class HeldKarpAlgorithm {
 
     private static final double INF = Integer.MAX_VALUE;
+    private static LatLng startPoint;
 
     public static ArrayList<LatLng> getTSPSolution(ArrayList<LatLng> points, double [][] dist) {
+        startPoint = points.get(points.size() - 1);
         int n = points.size();
         int N = 1 << n; // 2^n
         double[][] dp = new double[N][n];
@@ -63,7 +64,18 @@ public class HeldKarpAlgorithm {
         // Rekonstrukcja ścieżki
         ArrayList<LatLng> path = reconstructPath(parent, fullSet, lastCity, points);
         path.add(points.get(0)); // Powrót do startu
-        return path;
+        return getPathStartFromTheFirstPoint(path);
+    }
+
+    private static ArrayList<LatLng> getPathStartFromTheFirstPoint(ArrayList<LatLng> path) {
+        ArrayList<LatLng> result = new ArrayList<>();
+        result.add(startPoint);
+
+        int index = path.indexOf(startPoint);
+        for (int i = index + 1; i < path.size(); i++) result.add(path.get(i));
+        for (int i = 0; i < index; i++) result.add(path.get(i));
+
+        return result;
     }
 
     private static ArrayList<LatLng> reconstructPath(int[][] parent, int subset, int last, ArrayList<LatLng> points) {

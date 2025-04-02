@@ -1,5 +1,4 @@
 package com.example.bachelorthesisapp;
-import com.example.bachelorthesisapp.mapsActivity.DirectionsHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -8,7 +7,7 @@ import java.util.Random;
 public class PointUtils
 {
     public static ArrayList<LatLng> createRandomPoints(int size) {
-        ArrayList<LatLng> ArrayList = new ArrayList<LatLng>(size);
+        ArrayList<LatLng> ArrayList = new ArrayList<>(size);
         Random random = new Random();
         for(int i=0;i<size;++i){
             LatLng point = new LatLng(random.nextInt(90),random.nextInt(90));
@@ -48,7 +47,7 @@ public class PointUtils
         return 0;
     }
 
-    public static double distance(LatLng a, LatLng b) { return (double) Math.hypot(a.longitude-b.longitude,a.latitude-b.latitude); }
+    public static double distance(LatLng a, LatLng b) { return Math.hypot(a.longitude-b.longitude,a.latitude-b.latitude); }
 
     public static long doubleDiv(double a,double b) { return (long)(a/b); }
 
@@ -56,7 +55,7 @@ public class PointUtils
 
     public static double angle(LatLng a, LatLng b)
     {
-        return doubleMod((double) (Math.atan2(b.latitude-a.latitude,b.longitude-a.longitude)+Math.PI), (double) Math.PI);
+        return doubleMod((Math.atan2(b.latitude-a.latitude,b.longitude-a.longitude)+Math.PI), Math.PI);
     }
 
 }
