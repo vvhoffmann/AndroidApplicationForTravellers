@@ -45,6 +45,7 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -52,7 +53,7 @@ import java.util.Timer;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public static GoogleMap mMap;
-    public static HashMap<LatLng, Marker> markers = new HashMap<>();
+    public static LinkedHashMap<LatLng, Marker> markers = new LinkedHashMap<>();
     private FusedLocationProviderClient fusedLocationClient;
     public static Marker currentPositionMarker;
     private PlacesClient placesClient;
@@ -207,19 +208,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Obsługa kliknięcia na mapę
         mMap.setOnMapClickListener(latLng -> {
-            String placeDescription = getPlaceDescription(latLng);
-            if (currentPositionMarker == null) {
-                currentPositionMarker = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title("Twoja lokalizacja -" + placeDescription)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                markers.put(latLng, currentPositionMarker);
-            } else {
-                Marker marker = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title(placeDescription));
-                markers.put(latLng, marker);
+            if(Math.abs(latLng.latitude - currentPositionMarker.getPosition().latitude) > 0.2 || Math.abs(latLng.longitude - currentPositionMarker.getPosition().longitude) > 0.2)
+            {
+                Toast.makeText(getContext(), "Lokalizacja jest za daleko od Twojej lokalizacji początkowej", Toast.LENGTH_LONG).show();
             }
+            else{
+                String placeDescription = getPlaceDescription(latLng);
+                if (currentPositionMarker == null) {
+                    currentPositionMarker = mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title("Twoja lokalizacja -" + placeDescription)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    markers.put(latLng, currentPositionMarker);
+                } else {
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(placeDescription));
+                    markers.put(latLng, marker);
+                }
+            }
+
         });
     }
 
