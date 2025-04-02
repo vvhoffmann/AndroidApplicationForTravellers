@@ -10,8 +10,11 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.bachelorthesisapp.R;
 import com.example.bachelorthesisapp.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.LinkedHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,6 +26,8 @@ public class MapsActivity extends FragmentActivity {
     private Fragment mapFragment;
     private Fragment markersListFragment;
     private Fragment routeFragment;
+
+    private final LinkedHashMap<LatLng, Marker> markers = new LinkedHashMap<>();
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -111,5 +116,9 @@ public class MapsActivity extends FragmentActivity {
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null) // Pozwala wrócić do poprzedniego ekranu
                 .commit();
+    }
+
+    public LinkedHashMap<LatLng, Marker> getMarkers() {
+        return markers;
     }
 }

@@ -63,6 +63,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        markers = ((MapsActivity) requireActivity()).getMarkers();
+
         // Inicjalizacja klienta lokalizacji
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
@@ -183,7 +185,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 for (LatLng latLng : markers.keySet()) {
                     mMap.addMarker(new MarkerOptions()
                             .position(latLng)
-                            .title(markers.get(latLng).getTitle() + " - " + Math.round(latLng.latitude) + "," + Math.round(latLng.longitude))
+                            .title(getPlaceDescription(latLng))
                             .icon(BitmapDescriptorFactory.defaultMarker()));
                 }
             }).addOnFailureListener(e -> {
@@ -219,7 +221,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             .position(latLng)
                             .title("Twoja lokalizacja -" + placeDescription)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                    markers.put(latLng, currentPositionMarker);
                 } else {
                     Marker marker = mMap.addMarker(new MarkerOptions()
                             .position(latLng)
@@ -255,6 +256,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 String characters = "abcdefghijklmnopqrstuvwxyz";
                 String text = "ul. " + address.getThoroughfare() + " " + address.getSubThoroughfare() + ", " + address.getLocality();
                 placeDescription = !address.getFeatureName().matches(".*[" + characters + "].*") ? text : address.getFeatureName() + ", " + text;
+            }
+            else{
+                placeDescription = "[ " + latLng.latitude + ", " + latLng.longitude + " ]";
             }
         } catch (Exception e) {
             Log.e(TAG, "Error retrieving place description", e);

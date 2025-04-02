@@ -1,5 +1,7 @@
 package com.example.bachelorthesisapp.mapsActivity;
 
+import static java.util.Arrays.stream;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,13 +23,14 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 
 public class RouteFragment extends Fragment {
 
-    private HashMap<LatLng, Marker> markers = null;
-
+    private LinkedHashMap<LatLng, Marker> markers;
     private ArrayList<LatLng> points = new ArrayList<>();
-
+    public static ArrayList<Marker> resultMarkers;
     private double[][] distanceMatrix = null;
     private ArrayList<LatLng> resultPath = new ArrayList<>();
     private boolean isRouteCalculated = false;
@@ -55,40 +59,31 @@ public class RouteFragment extends Fragment {
         tvResultDescription = view.findViewById(R.id.tvResultDescription);
 
 
-        if (markers == null)
-            markers = MapFragment.markers;
+        markers = ((MapsActivity) requireActivity()).getMarkers();
+        Log.i("Markers", " " + markers);
 
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
+        Marker currentPositionMarker = MapFragment.currentPositionMarker;
+        points.add(currentPositionMarker.getPosition());
         points.addAll(markers.keySet());
 
         try {
             if (distanceMatrix == null)
                 distanceMatrix = DirectionsHelper.getDistanceArray(points);
 
-            for (int i = 0; i < points.size(); i++) {
-                for (int j = 0; j < points.size(); j++) {
-                    Log.d("DistanceMatrix", "Dystans [" + i + "][" + j + "]: " + distanceMatrix[i][j] + " km");
-                }
-            }
-
             ArrayList<LatLng> path = HeldKarpAlgorithm.getTSPSolution(points, distanceMatrix);
-            Log.d("Path", "Ścieżka: " + path);
+            Log.d("PathRoute", "Ścieżka: " + path);
 
-            ArrayList<Marker> resultMarkers = new ArrayList<>();
-            for (LatLng latLng : path) {
-                for (LatLng originalLatLng : markers.keySet()) {
-                    if (originalLatLng.equals(latLng)) {
-                        resultMarkers.add(markers.get(originalLatLng));
-                        break;
-                    }
-                }
-            }
+            resultMarkers = new ArrayList<>();
+            resultMarkers.add(currentPositionMarker);
 
-            for (Marker marker : resultMarkers) {
-                marker.showInfoWindow();
-            }
+            for (LatLng latLng : path)
+                if(!latLng.equals(currentPositionMarker.getPosition()))
+                    resultMarkers.add(markers.get(latLng));
+            resultMarkers.add(currentPositionMarker);
 
+            Log.i("PATHM " , " ResultMarkers: " + markers );
         } catch (Exception e) {
             Log.e("Directions", "Błąd: " + e.getMessage());
         }
@@ -109,35 +104,13 @@ public class RouteFragment extends Fragment {
 
     private void refreshList(ListView listView) {
         // Sample data for the ListView
-        String[] items = markers.keySet()
-                .stream()
-                .map(latLng -> createStringFromMarker(markers.get(latLng))).toArray(String[]::new);
+        String[] items = new String[resultMarkers.size()];
 
+        for (int i = 0; i < resultMarkers.size(); i++) {
+            items[i] = resultMarkers.get(i).getTitle();
+        }
         // Set up an adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);
-    }
-
-    private String createStringFromMarker(Marker marker) {
-        return marker.getTitle() + "\n[ "
-                + marker.getPosition().latitude + " , "
-                + marker.getPosition().longitude + " ]";
-    }
-
-    private Marker createMarkerFromString(String text) {
-        text = text.replaceAll("\\]", "");
-        String[] parts = text.split("\\[");
-        String[] coordinates = parts[1].trim().split(",");
-
-        double lat = Double.parseDouble(coordinates[0].trim());
-        double lng = Double.parseDouble(coordinates[1].trim());
-
-        LatLng position = new LatLng(lat, lng);
-        for (LatLng latLng : markers.keySet()) {
-            if (latLng.equals(position)) {
-                return markers.get(latLng);
-            }
-        }
-        return null;
     }
 }

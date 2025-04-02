@@ -39,7 +39,7 @@ public class MarkersListFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        markers = MapFragment.markers;
+        markers = ((MapsActivity) requireActivity()).getMarkers();
 
 
         View view = inflater.inflate(R.layout.fragment_list, container, false);
@@ -58,7 +58,6 @@ public class MarkersListFragment extends Fragment {
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             view1.setSelected(true);
             selectedMarker = createMarkerFromString(parent.getItemAtPosition(position).toString());
-            Log.e("TAG", "onCreateView: " + selectedMarker.getPosition());
             view1.setBackgroundColor(Color.parseColor(("#ADD8E6")));
 
             if (listView.getCheckedItemPosition() != ListView.INVALID_POSITION)
@@ -80,8 +79,11 @@ public class MarkersListFragment extends Fragment {
 
     private void refreshList(ListView listView) {
         items = new String[markers.size() + 1];
-        items[0] = createStringFromMarker(currentPositionMarker);
-        System.arraycopy(markers.keySet().stream().map(latlng -> createStringFromMarker(Objects.requireNonNull(markers.get(latlng)))).toArray(String[]::new), 0, items, 1, items.length - 1);
+        items[0] = currentPositionMarker.getTitle();
+        System.arraycopy(markers.values()
+                .stream()
+                .map(Marker::getTitle)
+                .toArray(String[]::new), 0, items, 1, items.length - 1);
         // Set up an adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);

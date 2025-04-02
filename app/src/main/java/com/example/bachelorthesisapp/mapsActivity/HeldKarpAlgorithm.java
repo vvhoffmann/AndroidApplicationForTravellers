@@ -1,5 +1,7 @@
 package com.example.bachelorthesisapp.mapsActivity;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -64,7 +66,8 @@ public class HeldKarpAlgorithm {
         // Rekonstrukcja ścieżki
         ArrayList<LatLng> path = reconstructPath(parent, fullSet, lastCity, points);
         path.add(points.get(0)); // Powrót do startu
-        return getPathStartFromTheFirstPoint(path);
+        Log.i("HeldKarpPath", "HeldKarpPath before: " + path);
+        return path;//getPathStartFromTheFirstPoint(path);
     }
 
     private static ArrayList<LatLng> getPathStartFromTheFirstPoint(ArrayList<LatLng> path) {
@@ -74,6 +77,7 @@ public class HeldKarpAlgorithm {
         int index = path.indexOf(startPoint);
         for (int i = index + 1; i < path.size(); i++) result.add(path.get(i));
         for (int i = 0; i < index; i++) result.add(path.get(i));
+        Log.i("HeldKarpPath", "HeldKarpPath: " + result);
 
         return result;
     }
