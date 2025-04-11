@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp;
+package pl.vvhoffmann.routemyway.utils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;

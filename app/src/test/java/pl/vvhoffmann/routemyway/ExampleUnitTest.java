@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp;
+package pl.vvhoffmann.routemyway;
 
 import org.junit.Test;
 

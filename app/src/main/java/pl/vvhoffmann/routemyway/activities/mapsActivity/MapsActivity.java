@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp.mapsActivity;
+package pl.vvhoffmann.routemyway.activities.mapsActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -8,13 +8,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.example.bachelorthesisapp.R;
-import com.example.bachelorthesisapp.databinding.ActivityMapsBinding;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import pl.vvhoffmann.routemyway.R;
+import pl.vvhoffmann.routemyway.databinding.ActivityMapsBinding;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.MapFragment;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.MarkersListFragment;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.RouteFragment;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.LinkedHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,12 +23,9 @@ public class MapsActivity extends FragmentActivity {
 
     private ActivityMapsBinding binding;
 
-    // Fragmenty jako singletony
-    private Fragment mapFragment;
-    private Fragment markersListFragment;
-    private Fragment routeFragment;
-
-    private final LinkedHashMap<LatLng, Marker> markers = new LinkedHashMap<>();
+    private static Fragment mapFragment;
+    private static Fragment markersListFragment;
+    private static Fragment routeFragment;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -71,7 +69,11 @@ public class MapsActivity extends FragmentActivity {
                 .commitAllowingStateLoss()); // Uruchomienie na osobnym wątku
     }
 
-    // Sprawdzenie uprawnień lokalizacji
+    // Pomocnicza metoda, aby uniknąć powtórnych zmian na tym samym fragmencie
+    private Fragment getCurrentFragment() {
+        return getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+    }
+
     private void checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -79,7 +81,6 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    // Obsługa kliknięcia elementów w dolnej nawigacji
     private final BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
             item -> {
                 Fragment selectedFragment;
@@ -100,25 +101,15 @@ public class MapsActivity extends FragmentActivity {
                 return true;
             };
 
-    // Pomocnicza metoda, aby uniknąć powtórnych zmian na tym samym fragmencie
-    private Fragment getCurrentFragment() {
-        return getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         executorService.shutdown(); // Zamknięcie ExecutorService, aby uniknąć wycieków pamięci
     }
-
     public void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null) // Pozwala wrócić do poprzedniego ekranu
                 .commit();
-    }
-
-    public LinkedHashMap<LatLng, Marker> getMarkers() {
-        return markers;
     }
 }

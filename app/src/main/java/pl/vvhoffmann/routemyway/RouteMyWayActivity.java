@@ -1,20 +1,19 @@
-package com.example.bachelorthesisapp;
+package pl.vvhoffmann.routemyway;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.bachelorthesisapp.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.services.ToastService;
 
 public class RouteMyWayActivity extends AppCompatActivity {
 
@@ -40,11 +39,7 @@ public class RouteMyWayActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Inicjalizacja komponentów UI
-        title = findViewById(R.id.tvTitle);
-        description = findViewById(R.id.tvDesc);
-        btnToApp = findViewById(R.id.btnToApp);
-        switchLocation = findViewById(R.id.switchLocation);
+        initializeUIComponents();
 
         switchLocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
             locationEnabled = isChecked;
@@ -52,19 +47,19 @@ public class RouteMyWayActivity extends AppCompatActivity {
 
         // Obsługa kliknięcia na przycisk
         btnToApp.setOnClickListener(v -> {
-            // Wyświetlenie komunikatu powitalnego
-            showToast("Witaj w aplikacji!!");
-            // Uruchomienie nowej aktywności
+            ToastService.showToast("Witaj w aplikacji!!", RouteMyWayActivity.this);
             navigateToMapsActivity();
         });
     }
 
-    // Funkcja do wyświetlania toastów
-    private void showToast(String message) {
-        Toast.makeText(RouteMyWayActivity.this, message, Toast.LENGTH_SHORT).show();
+    private void initializeUIComponents() {
+        // Inicjalizacja komponentów UI
+        title = findViewById(R.id.tvTitle);
+        description = findViewById(R.id.tvDesc);
+        btnToApp = findViewById(R.id.btnToApp);
+        switchLocation = findViewById(R.id.switchLocation);
     }
 
-    // Funkcja do przejścia do MapsActivity
     private void navigateToMapsActivity() {
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(intent);

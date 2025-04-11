@@ -1,4 +1,4 @@
-package pl.vvhoffmann.routemyway.mapsActivity.fragments;
+package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,21 +16,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import pl.vvhoffmann.routemyway.R;
-import pl.vvhoffmann.routemyway.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
+import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import java.util.LinkedHashMap;
 
 public class MarkersListFragment extends Fragment {
     private ListView listView;
-    private LinkedHashMap<LatLng,Marker> markers;
-    public static Marker currentPositionMarker;
+    private Button btnRemoveMarker;
     private Marker selectedMarker;
 
-    private String[] items;
-
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
@@ -38,51 +38,52 @@ public class MarkersListFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        markers = ((MapsActivity) requireActivity()).getMarkers();
-
-
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        // Initialize components
-        listView = view.findViewById(R.id.listView);
-        Button btnRemoveMarker = view.findViewById(R.id.btnRemoveMarker);
-
-        currentPositionMarker = MapFragment.currentPositionMarker;
-
-        refreshList(listView);
-
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        btnRemoveMarker.setVisibility(View.INVISIBLE);
+        initializeUIComponents(view);
 
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             view1.setSelected(true);
-            selectedMarker = createMarkerFromString(parent.getItemAtPosition(position).toString());
+
             view1.setBackgroundColor(Color.parseColor(("#ADD8E6")));
 
             if (listView.getCheckedItemPosition() != ListView.INVALID_POSITION)
                 btnRemoveMarker.setVisibility(View.VISIBLE);
-
         });
 
 
         btnRemoveMarker.setOnClickListener(v -> {
             String selectedItem = (String) listView.getItemAtPosition(listView.getCheckedItemPosition());
-            selectedMarker = createMarkerFromString(selectedItem);
-            Log.e("TAG", "onCreateView: " + selectedMarker.getPosition());
+            Log.i("Usuwanie", "onClick: " + selectedItem);
+
+            selectedMarker = MarkerUtils.createMarkerFromString(selectedItem);
+            Log.i("Usuwanie", "onClick: " + selectedMarker.getTitle());
+
             removeMarker(selectedMarker);
+            MarkersRepository.removeMarker(selectedMarker);
             btnRemoveMarker.setVisibility(View.INVISIBLE);
             refreshList(listView);
         });
         return view;
     }
 
+    private void initializeUIComponents(View view) {
+        // Initialize components
+        listView = view.findViewById(R.id.listView);
+        btnRemoveMarker = view.findViewById(R.id.btnRemoveMarker);
+
+        refreshList(listView);
+
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        btnRemoveMarker.setVisibility(View.INVISIBLE);
+    }
+
     private void refreshList(ListView listView) {
-        items = new String[markers.size() + 1];
-        items[0] = currentPositionMarker.getTitle();
-        System.arraycopy(markers.values()
+        String[] items = new String[MarkersRepository.getSize()];
+        System.arraycopy(MarkersRepository.getMarkers()
                 .stream()
                 .map(Marker::getTitle)
-                .toArray(String[]::new), 0, items, 1, items.length - 1);
+                .toArray(String[]::new), 0, items, 0, items.length);
         // Set up an adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);
@@ -91,34 +92,11 @@ public class MarkersListFragment extends Fragment {
 
     // Funkcja do usuwania ostatniego markera
     private void removeMarker(Marker selectedMarker) {
-        if (!markers.isEmpty() && markers.containsKey(selectedMarker.getPosition())) {
-            markers.remove(selectedMarker.getPosition()); // Usunięcie markera z listy
+        if (MarkersRepository.getSize() > 0 && MarkersRepository.containsMarker(selectedMarker)) {
+            MarkersRepository.removeMarker(selectedMarker); // Usunięcie markera z listy
             Toast.makeText(requireContext(), "Marker usunięty", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(requireContext(), "Brak markerów do usunięcia", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private String createStringFromMarker(Marker marker) {
-        return  marker.getTitle() + "\n[ "
-                + marker.getPosition().latitude + " , "
-                + marker.getPosition().longitude + " ]";
-    }
-
-    private Marker createMarkerFromString(String text) {
-        text = text.replaceAll("\\]", "");
-        String[] parts = text.split("\\[");
-        String[] coordinates = parts[1].trim().split(",");
-
-        double lat = Double.parseDouble(coordinates[0].trim());
-        double lng = Double.parseDouble(coordinates[1].trim());
-
-        LatLng position = new LatLng(lat, lng);
-        for (LatLng latLng : markers.keySet()) {
-            if (latLng.equals(position)) {
-                return markers.get(position);
-            }
-        }
-        return null;
     }
 }

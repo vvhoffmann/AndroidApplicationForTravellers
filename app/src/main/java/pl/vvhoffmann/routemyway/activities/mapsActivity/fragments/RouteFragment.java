@@ -1,6 +1,4 @@
-package pl.vvhoffmann.routemyway.mapsActivity.fragments;
-
-import static java.util.Arrays.stream;
+package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -17,20 +15,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import pl.vvhoffmann.routemyway.R;
-import pl.vvhoffmann.routemyway.mapsActivity.DirectionsHelper;
-import pl.vvhoffmann.routemyway.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.models.RouteModel;
+import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
+import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
 import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
+import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 
 public class RouteFragment extends Fragment {
 
-    private LinkedHashMap<LatLng, Marker> markers;
     private ArrayList<LatLng> points = new ArrayList<>();
     public static ArrayList<Marker> resultMarkers;
     private double[][] distanceMatrix;
@@ -44,6 +43,11 @@ public class RouteFragment extends Fragment {
     TextView tvResultDescription;
     ListView listView;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -53,46 +57,18 @@ public class RouteFragment extends Fragment {
         setRetainInstance(true);
         View view = inflater.inflate(R.layout.fragment_route, container, false);
 
-        listView = view.findViewById(R.id.list_view);
-        btnShowMap = view.findViewById(R.id.buttonShowMap);
-        btnEditPoints = view.findViewById(R.id.btnEditPoints);
-        tvTitle = view.findViewById(R.id.tvTitle);
-        tvResultTitle = view.findViewById(R.id.tvResultTitle);
-        tvResultDescription = view.findViewById(R.id.tvResultDescription);
+        initializeUIComponents(view);
 
-
-        markers = ((MapsActivity) requireActivity()).getMarkers();
-
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         double minDistance = 0.0;
-        Marker currentPositionMarker = MapFragment.currentPositionMarker;
-        points.clear();
-        points.add(currentPositionMarker.getPosition());
-        points.addAll(markers.keySet());
-        String message = "Points: " + Arrays.deepToString(points.toArray());
-        Log.d("Points przeszlo", message);
 
+        if (distanceMatrix == null)
+            distanceMatrix = PlacesUtils.getDistanceArray();
 
-        try {
-            if (distanceMatrix == null)
-                distanceMatrix = DirectionsHelper.getDistanceArray(points);
+        RouteModel routeModel = RouteOptimizationService.getOptimalRoute();
+        Log.d("PathRoute", "Scieżka: " + routeModel);
 
-            ArrayList<LatLng> path = HeldKarpAlgorithm.getTSPSolution(points, distanceMatrix);
-            Log.d("PathRoute", "Scieżka: " + path);
+        minDistance = routeModel.getDistance();
 
-            //minDistance = HeldKarpAlgorithm.getFinalDistance(path, distanceMatrix);
-            resultMarkers = new ArrayList<>();
-            resultMarkers.add(currentPositionMarker);
-
-            for (LatLng latLng : path)
-                if(!latLng.equals(currentPositionMarker.getPosition()))
-                    resultMarkers.add(markers.get(latLng));
-            resultMarkers.add(currentPositionMarker);
-
-            Log.i("PATHM " , " ResultMarkers: " + markers );
-        } catch (Exception e) {
-            Log.e("Directions", "Błąd: " + e.getMessage());
-        }
 
         if(points != null && !points.isEmpty() && points.size() > 3 && resultMarkers != null && !resultMarkers.isEmpty()) {
             refreshList(listView);
@@ -106,6 +82,17 @@ public class RouteFragment extends Fragment {
         btnShowMap.setOnClickListener(v -> ((MapsActivity) getActivity()).replaceFragment(new MapFragment()));
 
         return view;
+    }
+
+    private void initializeUIComponents(View view) {
+        listView = view.findViewById(R.id.list_view);
+        btnShowMap = view.findViewById(R.id.buttonShowMap);
+        btnEditPoints = view.findViewById(R.id.btnEditPoints);
+        tvTitle = view.findViewById(R.id.tvTitle);
+        tvResultTitle = view.findViewById(R.id.tvResultTitle);
+        tvResultDescription = view.findViewById(R.id.tvResultDescription);
+
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
     }
 
     private void refreshList(ListView listView) {

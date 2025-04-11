@@ -1,7 +1,12 @@
-package com.example.bachelorthesisapp.mapsActivity;
+package pl.vvhoffmann.routemyway.utils;
+
+import static android.content.ContentValues.TAG;
+
+import android.location.Address;
+import android.location.Geocoder;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.GeoApiContext;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,17 +17,52 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class DirectionsHelper {
+import pl.vvhoffmann.routemyway.config.AppConfig;
+import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 
-    private GeoApiContext context;
-    private static final String API_KEY = "AIzaSyAysSR_bO84Y4HF7NLNwkFjpGIN1CnfMSM";
+public class PlacesUtils {
 
-    public static double[][] getDistanceArray(ArrayList<LatLng> points) throws Exception {
-        int n = points.size();
+    public static String getPlaceDescription(LatLng latLng, Geocoder geocoder) {
+        String placeDescription = "Nie znaleziono opisu miejsca";
+
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                String characters = "abcdefghijklmnopqrstuvwxyz";
+                String text = "ul. " + address.getThoroughfare() + " " + address.getSubThoroughfare() + ", " + address.getLocality();
+                placeDescription = !address.getFeatureName().matches(".*[" + characters + "].*") ? text : address.getFeatureName() + ", " + text;
+            }
+            else{
+                placeDescription = "[ " + latLng.latitude + ", " + latLng.longitude + " ]";
+            }
+
+            /*
+            if(address.getFeatureName() != null && address.getFeatureName().matches(".*[" + characters + "].*") )
+                placeDescription = address.getFeatureName();
+            else
+                placeDescription =  "ul. " + address.getThoroughfare() + " " + address.getSubThoroughfare() + ", " + address.getLocality();
+            */
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving place description", e);
+        }
+
+        return placeDescription;
+    }
+
+    public static double[][] getDistanceArray() {
+        LinkedList<LatLng> points = MarkersRepository.getLatLngList();
+
+        int n = MarkersRepository.getSize();
         double[][] dist = new double[n][n]; // Macierz odległości
 
         // Używamy ExecutorService do obsługi wielu zapytań jednocześnie
@@ -40,7 +80,11 @@ public class DirectionsHelper {
         int index = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                dist[i][j] = results.get(index++).get(); // Pobieranie wyniku
+                try {
+                    dist[i][j] = results.get(index++).get(); // Pobieranie wyniku
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -48,14 +92,12 @@ public class DirectionsHelper {
         return dist;
     }
 
-
-
     public static double getWalkingRoute(LatLng origin, LatLng destination) throws Exception {
         String requestUrl = "https://maps.googleapis.com/maps/api/directions/json?origin="
                 + origin.latitude + "," + origin.longitude
                 + "&destination=" + destination.latitude + "," + destination.longitude
                 + "&mode=walking"
-                + "&key=" + API_KEY;
+                + "&key=" + AppConfig.GOOGLE_MAPS_API_KEY;
 
         URL url = new URL(requestUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -91,18 +133,4 @@ public class DirectionsHelper {
             throw new Exception("Brak trasy w odpowiedzi API");
         }
     }
-
-
-
-//    public void displayRoute(DirectionsResult result, RouteFragment context) {
-//        for (DirectionsRoute route : result.routes) {
-//            for (DirectionsLeg leg : route.legs) {
-//                // Drukowanie informacji o trasie
-//                //Toast.makeText("Trasa: " + leg.startAddress + " -> " + leg.endAddress);
-//                //Toast.makeText("Czas: " + leg.duration.humanReadable);
-//                System.out.println("Odległość: " + leg.distance.humanReadable);
-//                //Toast.makeText("Szczegóły trasy: " + leg.steps);
-//            }
-//        }
-//    }
 }

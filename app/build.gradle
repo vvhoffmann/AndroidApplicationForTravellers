@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.bachelorthesisapp'
+    namespace 'pl.vvhoffmann.routemyway'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.bachelorthesisapp"
+        applicationId "pl.vvhoffmann.routemyway"
         minSdk 28
         targetSdk 34
         versionCode 1
