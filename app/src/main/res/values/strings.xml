@@ -19,4 +19,5 @@
     <string name="pokaz_trase_na_mapie">Pokaż trasę na mapie</string>
     <string name="edytuj_punkty">Edytuj Punkty</string>
     <string name="location_permission">Udostępnianie lokalizacji</string>
+    <string name="show_route">Pokaż trasę</string>
 </resources>

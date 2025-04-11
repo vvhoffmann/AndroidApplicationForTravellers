@@ -82,4 +82,13 @@ public class MarkersRepository {
     public static boolean containsMarker(Marker selectedMarker) {
         return markersMap.containsKey(selectedMarker.getPosition());
     }
+
+    public static String getDescription() {
+        String text =  "MarkersRepository{";
+        for (Marker marker : markers) {
+            text += "\n" + marker.getTitle() + " " + marker.getPosition();
+        }
+        text += "\n}";
+        return text;
+    }
 }

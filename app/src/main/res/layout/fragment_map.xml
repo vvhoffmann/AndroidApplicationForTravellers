@@ -32,13 +32,45 @@
 
     <!-- Przycisk umieszczony pod mapą -->
     <Button
-        android:id="@+id/btnDeleteMarker"
+        android:id="@+id/btnShowRoute"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/usun_marker"
+        android:text="@string/show_route"
         android:backgroundTint="@color/quantum_bluegrey600"
         android:textColor="@android:color/white"
         android:padding="12dp"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"/>
+
+    <Button
+        android:id="@+id/btnDeleteMarker"
+        android:layout_width="382dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="18dp"
+        android:backgroundTint="@color/quantum_bluegrey600"
+        android:padding="12dp"
+        android:text="@string/usun_marker"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/btnDeleteMarker2"
+        android:layout_width="382dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="18dp"
+        android:backgroundTint="@color/quantum_bluegrey600"
+        android:padding="12dp"
+        android:text="@string/usun_marker"
+        android:textColor="@android:color/white" />
 </RelativeLayout>

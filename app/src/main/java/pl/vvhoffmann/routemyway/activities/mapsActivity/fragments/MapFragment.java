@@ -3,6 +3,7 @@ package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 import static android.content.ContentValues.TAG;
 
 import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getCurrentPositionMarker;
+import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getMarkerByLatLng;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -59,6 +60,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private AutocompleteSupportFragment autocompleteFragment;
 
     private Button btnRemoveMarker;
+    private Button btnRemoveMarker2;
+    private Button btnShowRoute;
+
+    private Geocoder geocoder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,17 +84,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        initializeComponents(view);
-
-        btnRemoveMarker.setOnClickListener(v -> {
-
-            btnRemoveMarker.setVisibility(View.INVISIBLE); // co usuwa ????????
-        });
-
-        return view;
-    }
-
-    private void initializeComponents(View view) {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -97,19 +91,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mapFragment.getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
 
+        initializeComponents(view);
+
+
+        return view;
+    }
+
+    private void initializeComponents(View view) {
+
         autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         btnRemoveMarker = view.findViewById(R.id.btnDeleteMarker);
         btnRemoveMarker.setVisibility(View.INVISIBLE);
+
+        btnRemoveMarker2 = view.findViewById(R.id.btnDeleteMarker2);
+        btnRemoveMarker2.setVisibility(View.INVISIBLE);
+
+        btnShowRoute = view.findViewById(R.id.btnShowRoute);
+        btnShowRoute.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+        geocoder = new Geocoder(requireContext(), Locale.getDefault());
+
         MapService.setMap(googleMap);
+
+        refreshMapMarkers(geocoder);
+
         MapService.getMap().getUiSettings().setZoomControlsEnabled(true);
 
-        Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
 
         if (RouteMyWayActivity.locationEnabled) {
             // Sprawdzenie i żądanie uprawnień lokalizacji
@@ -167,7 +179,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public void onPlaceSelected(@NonNull Place place) {
                             // Obsługa wyboru miejsca
-                            Log.i(TAG, "MIEJSCE: " + place.getName() + ", " + place.getId());
                             MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
                             MarkerOptions markerOptions = new MarkerOptions()
                                     .position(place.getLatLng())
@@ -176,9 +187,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Marker marker = MapService.getMap().addMarker(markerOptions);
                             assert marker != null;
                             MarkersRepository.addMarker(marker);
-                            Log.i("Markers after add", "Markers: " + MarkersRepository.getLatLngList());
                         }
-
                         @Override
                         public void onError(@NonNull Status status) {
                             Log.i(TAG, "An error occurred: " + status);
@@ -186,15 +195,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     });
                 }
 
-                for (LatLng latLng : MarkersRepository.getLatLngList()) {
-                    if (latLng.equals(getCurrentPositionMarker().getPosition()))
-                        continue;
-
-                    MapService.getMap().addMarker(new MarkerOptions()
-                            .position(latLng)
-                            .title(PlacesUtils.getPlaceDescription(latLng, geocoder))
-                            .icon(BitmapDescriptorFactory.defaultMarker()));
-                }
             }).addOnFailureListener(e -> {
                 Log.e(TAG, "Error getting location", e);
                 Toast.makeText(requireContext(), "Nie udało się pobrać lokalizacji.", Toast.LENGTH_LONG).show();
@@ -235,8 +235,58 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     MarkersRepository.addMarker(marker);
                 }
             }
-            btnRemoveMarker.setVisibility(View.VISIBLE);
+            btnRemoveMarker.setVisibility(View.INVISIBLE);
+            btnRemoveMarker2.setVisibility(View.VISIBLE);
+
+            btnRemoveMarker2.setOnClickListener(v -> {
+                Marker markerToRemove = getMarkerByLatLng(latLng);
+                if (markerToRemove != null) {
+                    markerToRemove.remove();
+                    MarkersRepository.removeMarker(markerToRemove);
+                    Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
+                    btnRemoveMarker2.setVisibility(View.INVISIBLE);
+                }
+            });
         });
+
+
+        MapService.getMap().setOnMarkerClickListener(marker -> {
+            marker.showInfoWindow();
+            btnRemoveMarker2.setVisibility(View.INVISIBLE);
+            btnRemoveMarker.setVisibility(View.VISIBLE);
+
+            btnRemoveMarker.setOnClickListener(v -> {
+                marker.remove();
+                MarkersRepository.removeMarker(marker);
+                Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
+                btnRemoveMarker.setVisibility(View.INVISIBLE);
+            });
+
+            return true;
+        });
+
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshMapMarkers(geocoder);
+    }
+
+    private static void refreshMapMarkers(Geocoder geocoder) {
+        if(MapService.getMap() != null)
+            MapService.getMap().clear();
+
+        for (LatLng latLng : MarkersRepository.getLatLngList()) {
+            if (latLng.equals(getCurrentPositionMarker().getPosition()))
+                continue;
+
+            MapService.getMap().addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(PlacesUtils.getPlaceDescription(latLng, geocoder))
+                    .icon(BitmapDescriptorFactory.defaultMarker()));
+        }
     }
 
     @NonNull
