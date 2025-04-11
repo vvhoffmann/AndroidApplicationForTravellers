@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp.mapsActivity;
+package pl.vvhoffmann.routemyway.mapsActivity.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,14 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.bachelorthesisapp.R;
+import pl.vvhoffmann.routemyway.R;
+import pl.vvhoffmann.routemyway.mapsActivity.MapsActivity;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import java.lang.reflect.Array;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 
 public class MarkersListFragment extends Fragment {
     private ListView listView;

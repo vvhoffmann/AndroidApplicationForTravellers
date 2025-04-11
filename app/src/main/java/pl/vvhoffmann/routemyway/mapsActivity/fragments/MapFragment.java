@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp.mapsActivity;
+package pl.vvhoffmann.routemyway.mapsActivity.fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -18,8 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.bachelorthesisapp.R;
-import com.example.bachelorthesisapp.RouteMyWayActivity;
+import pl.vvhoffmann.routemyway.R;
+import pl.vvhoffmann.routemyway.RouteMyWayActivity;
+import pl.vvhoffmann.routemyway.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.models.PlaceModel;
+import pl.vvhoffmann.routemyway.repositories.PlacesRepository;
+
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,7 +39,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.CircularBounds;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
@@ -44,11 +47,9 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
@@ -97,9 +98,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
+        MapsActivity.setMap(googleMap);
 
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        MapsActivity.getMap().getUiSettings().setZoomControlsEnabled(true);
 
         if (RouteMyWayActivity.locationEnabled) {
             // Sprawdzenie i żądanie uprawnień lokalizacji
@@ -115,11 +116,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null && mMap != null) {
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    currentPositionMarker = mMap.addMarker(new MarkerOptions()
+
+                    Marker currentPositionMarker = mMap.addMarker(new MarkerOptions()
                             .position(currentLatLng)
                             .title("Twoja lokalizacja - " + getPlaceDescription(currentLatLng))
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
+                    PlacesRepository.setCurrentPosition(new PlaceModel(currentPositionMarker));
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
                 } else {
                     Toast.makeText(requireContext(), "Brak lokalizacji", Toast.LENGTH_SHORT).show();
@@ -260,6 +263,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             else{
                 placeDescription = "[ " + latLng.latitude + ", " + latLng.longitude + " ]";
             }
+
+            /*
+            if(address.getFeatureName() != null && address.getFeatureName().matches(".*[" + characters + "].*") )
+                placeDescription = address.getFeatureName();
+            else
+                placeDescription =  "ul. " + address.getThoroughfare() + " " + address.getSubThoroughfare() + ", " + address.getLocality();
+            */
         } catch (Exception e) {
             Log.e(TAG, "Error retrieving place description", e);
         }

@@ -1,4 +1,4 @@
-package com.example.bachelorthesisapp.mapsActivity;
+package pl.vvhoffmann.routemyway.mapsActivity.fragments;
 
 import static java.util.Arrays.stream;
 
@@ -11,27 +11,29 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.bachelorthesisapp.R;
+import pl.vvhoffmann.routemyway.R;
+import pl.vvhoffmann.routemyway.mapsActivity.DirectionsHelper;
+import pl.vvhoffmann.routemyway.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 
 public class RouteFragment extends Fragment {
 
     private LinkedHashMap<LatLng, Marker> markers;
     private ArrayList<LatLng> points = new ArrayList<>();
     public static ArrayList<Marker> resultMarkers;
-    private double[][] distanceMatrix = null;
+    private double[][] distanceMatrix;
     private ArrayList<LatLng> resultPath = new ArrayList<>();
     private boolean isRouteCalculated = false;
 
@@ -60,21 +62,25 @@ public class RouteFragment extends Fragment {
 
 
         markers = ((MapsActivity) requireActivity()).getMarkers();
-        Log.i("Markers", " " + markers);
 
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-
+        double minDistance = 0.0;
         Marker currentPositionMarker = MapFragment.currentPositionMarker;
+        points.clear();
         points.add(currentPositionMarker.getPosition());
         points.addAll(markers.keySet());
+        String message = "Points: " + Arrays.deepToString(points.toArray());
+        Log.d("Points przeszlo", message);
+
 
         try {
             if (distanceMatrix == null)
                 distanceMatrix = DirectionsHelper.getDistanceArray(points);
 
             ArrayList<LatLng> path = HeldKarpAlgorithm.getTSPSolution(points, distanceMatrix);
-            Log.d("PathRoute", "Ścieżka: " + path);
+            Log.d("PathRoute", "Scieżka: " + path);
 
+            //minDistance = HeldKarpAlgorithm.getFinalDistance(path, distanceMatrix);
             resultMarkers = new ArrayList<>();
             resultMarkers.add(currentPositionMarker);
 
@@ -88,14 +94,14 @@ public class RouteFragment extends Fragment {
             Log.e("Directions", "Błąd: " + e.getMessage());
         }
 
-
-        refreshList(listView);
-        tvResultTitle.setVisibility(View.VISIBLE);
-        tvResultDescription.setText("Wynik: ");
-        btnShowMap.setVisibility(View.VISIBLE);
-        btnEditPoints.setVisibility(View.VISIBLE);
-        isRouteCalculated = true;
-
+        if(points != null && !points.isEmpty() && points.size() > 3 && resultMarkers != null && !resultMarkers.isEmpty()) {
+            refreshList(listView);
+            tvResultTitle.setVisibility(View.VISIBLE);
+            tvResultDescription.setText(minDistance + " km");
+            btnShowMap.setVisibility(View.VISIBLE);
+            btnEditPoints.setVisibility(View.VISIBLE);
+            isRouteCalculated = true;
+        }
 
         btnShowMap.setOnClickListener(v -> ((MapsActivity) getActivity()).replaceFragment(new MapFragment()));
 
