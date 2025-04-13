@@ -1,4 +1,4 @@
-package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
+package pl.vvhoffmann.routemyway.mapsActivity.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,16 +19,16 @@ import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.LinkedHashMap;
 
 public class MarkersListFragment extends Fragment {
     private ListView listView;
-    private Button btnRemoveMarker;
     private Marker selectedMarker;
 
-    private View selectedView;
-    ArrayAdapter<String> adapter;
+    private String[] items;
 
 
     @Nullable
@@ -36,68 +36,56 @@ public class MarkersListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        refreshList(listView);
 
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        initializeUIComponents(view);
+        // Initialize components
+        listView = view.findViewById(R.id.listView);
+        Button btnRemoveMarker = view.findViewById(R.id.btnRemoveMarker);
+
+        refreshList(listView);
+
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         btnRemoveMarker.setVisibility(View.INVISIBLE);
 
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             view1.setSelected(true);
-
+            selectedMarker = MarkerUtils.createMarkerFromString(parent.getItemAtPosition(position).toString());
             view1.setBackgroundColor(Color.parseColor(("#ADD8E6")));
-            selectedView = view1;
 
             if (listView.getCheckedItemPosition() != ListView.INVALID_POSITION)
                 btnRemoveMarker.setVisibility(View.VISIBLE);
 
-            btnRemoveMarker.setOnClickListener(v -> {
-                String selectedItem = (String) listView.getItemAtPosition(listView.getCheckedItemPosition());
-
-                selectedMarker = MarkerUtils.createMarkerFromString(selectedItem);
-
-                removeMarker(selectedMarker);
-                btnRemoveMarker.setVisibility(View.INVISIBLE);
-            });
         });
 
+
+        btnRemoveMarker.setOnClickListener(v -> {
+            String selectedItem = (String) listView.getItemAtPosition(listView.getCheckedItemPosition());
+            selectedMarker = MarkerUtils.createMarkerFromString(selectedItem);
+            Log.e("TAG", "onCreateView: " + selectedMarker.getPosition());
+            removeMarker(selectedMarker);
+            btnRemoveMarker.setVisibility(View.INVISIBLE);
+            refreshList(listView);
+        });
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        refreshList(listView);
-    }
-
-    private void initializeUIComponents(View view) {
-        // Initialize components
-        listView = view.findViewById(R.id.listView);
-        btnRemoveMarker = view.findViewById(R.id.btnRemoveMarker);
-    }
-
     private void refreshList(ListView listView) {
-
-        String[] items = new String[MarkersRepository.getSize()+1];
+        items = new String[MarkersRepository.getSize() ];
         System.arraycopy(MarkersRepository.getMarkers()
                 .stream()
-                .map(MarkerUtils::createMarkerDescription)
+                .map(Marker::getTitle)
                 .toArray(String[]::new), 0, items, 0, items.length);
         // Set up an adapter
-        if(listView != null){
-            adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
-            listView.setAdapter(adapter);
-        }
-
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
+        listView.setAdapter(adapter);
     }
 
 
     // Funkcja do usuwania ostatniego markera
     private void removeMarker(Marker selectedMarker) {
-        if (MarkersRepository.getSize() > 0 && MarkersRepository.containsMarker(selectedMarker)) {
-            MarkersRepository.removeMarker(selectedMarker); // Usunięcie markera z listy
+        if (!MarkersRepository.getMarkers().isEmpty() &&  MarkersRepository.containsMarker(selectedMarker)) {
+            MarkersRepository.removeMarker(selectedMarker);
             Toast.makeText(requireContext(), "Marker usunięty", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(requireContext(), "Brak markerów do usunięcia", Toast.LENGTH_SHORT).show();

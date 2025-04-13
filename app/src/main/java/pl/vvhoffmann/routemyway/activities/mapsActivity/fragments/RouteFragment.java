@@ -1,5 +1,6 @@
 package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
 import pl.vvhoffmann.routemyway.models.RouteModel;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
+import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
 import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
 import pl.vvhoffmann.routemyway.utils.PlacesUtils;
@@ -27,21 +29,17 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class RouteFragment extends Fragment {
-
-    private ArrayList<LatLng> points = new ArrayList<>();
-    public static ArrayList<Marker> resultMarkers;
-    private double[][] distanceMatrix;
-    private ArrayList<LatLng> resultPath = new ArrayList<>();
-    private boolean isRouteCalculated = false;
-
     Button btnShowMap;
     Button btnEditPoints;
     TextView tvTitle;
     TextView tvResultTitle;
     TextView tvResultDescription;
     ListView listView;
+
+    RouteModel routeModel ;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,25 +59,22 @@ public class RouteFragment extends Fragment {
 
         double minDistance = 0.0;
 
-        if (distanceMatrix == null)
-            distanceMatrix = PlacesUtils.getDistanceArray();
-
-        RouteModel routeModel = RouteOptimizationService.getOptimalRoute();
-        Log.d("PathRoute", "Scieżka: " + routeModel);
-
-        minDistance = routeModel.getDistance();
+        //minDistance = routeModel.getDistance();
 
 
-        if(points != null && !points.isEmpty() && points.size() > 3 && resultMarkers != null && !resultMarkers.isEmpty()) {
+        if(MarkersRepository.getSize() > 2) {
+            routeModel = RouteOptimizationService.getOptimalRoute();
+            Log.d("PathRoute", "Scieżka: " + routeModel);
+
             refreshList(listView);
+
             tvResultTitle.setVisibility(View.VISIBLE);
             tvResultDescription.setText(minDistance + " km");
             btnShowMap.setVisibility(View.VISIBLE);
             btnEditPoints.setVisibility(View.VISIBLE);
-            isRouteCalculated = true;
         }
 
-        btnShowMap.setOnClickListener(v -> ((MapsActivity) getActivity()).replaceFragment(new MapFragment()));
+        btnShowMap.setOnClickListener(v -> ((MapsActivity) requireActivity()).replaceFragment(MapsActivity.getMapFragment()));
 
         return view;
     }
@@ -96,12 +91,16 @@ public class RouteFragment extends Fragment {
     }
 
     private void refreshList(ListView listView) {
-        // Sample data for the ListView
-        String[] items = new String[resultMarkers.size()];
-
-        for (int i = 0; i < resultMarkers.size(); i++) {
-            items[i] = resultMarkers.get(i).getTitle();
+        if(routeModel == null) {
+            return;
         }
+        int size = routeModel.getSize();
+        // Sample data for the ListView
+        String[] items = new String[size];
+
+        for (int i = 0; i < size; i++)
+            items[i] = routeModel.getMarkers().get(i).getTitle();
+
         // Set up an adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);

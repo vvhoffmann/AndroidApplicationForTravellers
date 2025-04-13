@@ -19,7 +19,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,7 +61,7 @@ public class PlacesUtils {
     public static double[][] getDistanceArray() {
         LinkedList<LatLng> points = MarkersRepository.getLatLngList();
 
-        int n = MarkersRepository.getSize();
+        int n = points.size();
         double[][] dist = new double[n][n]; // Macierz odległości
 
         // Używamy ExecutorService do obsługi wielu zapytań jednocześnie

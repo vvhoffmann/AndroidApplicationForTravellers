@@ -1,16 +1,16 @@
 package pl.vvhoffmann.routemyway.services;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
-
+import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.RouteFragment;
 import pl.vvhoffmann.routemyway.models.RouteModel;
 
+import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
 
 public class RouteOptimizationService {
 
     public static RouteModel getOptimalRoute() {
-        return HeldKarpAlgorithm.getTSPSolution();
+        RouteModel routeModel = new RouteModel(HeldKarpAlgorithm.getTSPSolution());
+        RouteRepository.saveRoute(routeModel);
+        return routeModel;
     }
 }

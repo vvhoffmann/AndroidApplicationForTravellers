@@ -2,6 +2,8 @@ package pl.vvhoffmann.routemyway.models;
 
 import static pl.vvhoffmann.routemyway.utils.MarkerUtils.getMarkerByLatLng;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -14,6 +16,7 @@ import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
 public class RouteModel {
     private final LinkedList<Marker> markers;
+    private int size = 0;
     private double distance = 0;
     private double duration = 0;
 
@@ -30,10 +33,12 @@ public class RouteModel {
         markers = new LinkedList<>();
         for (LatLng latLng : latLngList)
             markers.add(getMarkerByLatLng(latLng));
-        setDistance();
+        size = markers.size();
+        //setDistance();
     }
 
     private void setDistance() {
+        distance =0;
         for (int i = 0; i < markers.size() - 1; i++) {
             LatLng start = markers.get(i).getPosition();
             LatLng end = markers.get(i + 1).getPosition();
@@ -49,6 +54,10 @@ public class RouteModel {
         return distance;
     }
 
+    public int getSize() {
+        return size;
+    }
+
     public double getDuration() {
         return duration;
     }
@@ -56,7 +65,9 @@ public class RouteModel {
     @NonNull
     @Override
     public String toString() {
-        return "Route{" +
-                "markers=" + markers + '}';
+        StringBuilder result = new StringBuilder("Route{markers= ");
+        for (Marker marker : markers)
+            result.append(marker.getTitle()).append(", [").append(marker.getPosition()).append("] ");
+        return result.toString();
     }
 }

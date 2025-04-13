@@ -53,6 +53,7 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
@@ -178,8 +179,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                         @Override
                         public void onPlaceSelected(@NonNull Place place) {
+                            btnRemoveMarker.setVisibility(View.INVISIBLE);
+                            btnRemoveMarker2.setVisibility(View.INVISIBLE);
                             // Obsługa wyboru miejsca
-                            MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
+                            MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(Objects.requireNonNull(place.getLatLng()), 15));
                             MarkerOptions markerOptions = new MarkerOptions()
                                     .position(place.getLatLng())
                                     .title(PlacesUtils.getPlaceDescription(place.getLatLng(), geocoder))
@@ -240,9 +243,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             btnRemoveMarker2.setOnClickListener(v -> {
                 Marker markerToRemove = getMarkerByLatLng(latLng);
+                Log.i("Marker to remove", "Marker to remove: " + markerToRemove.getPosition());
                 if (markerToRemove != null) {
-                    markerToRemove.remove();
                     MarkersRepository.removeMarker(markerToRemove);
+                    markerToRemove.remove();
                     Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
                     btnRemoveMarker2.setVisibility(View.INVISIBLE);
                 }
@@ -251,13 +255,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
         MapService.getMap().setOnMarkerClickListener(marker -> {
+            Log.i(TAG, "Size: " + MarkersRepository.getLatLngList().size() + " " + MarkersRepository.getSize());
             marker.showInfoWindow();
             btnRemoveMarker2.setVisibility(View.INVISIBLE);
             btnRemoveMarker.setVisibility(View.VISIBLE);
+            Log.i("Marker clicked", "Marker clicked: " + marker.getTitle() + " " + marker.getPosition());
 
             btnRemoveMarker.setOnClickListener(v -> {
-                marker.remove();
+                Log.i("Marker to remove", "Marker to remove: " + marker.getTitle() + "  "+ marker.getPosition());
                 MarkersRepository.removeMarker(marker);
+                marker.remove();
+
                 Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
                 btnRemoveMarker.setVisibility(View.INVISIBLE);
             });

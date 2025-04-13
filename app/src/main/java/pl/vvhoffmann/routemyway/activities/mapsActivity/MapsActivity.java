@@ -11,8 +11,8 @@ import androidx.fragment.app.FragmentActivity;
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.databinding.ActivityMapsBinding;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.MapFragment;
-import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.MarkersListFragment;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.RouteFragment;
+import pl.vvhoffmann.routemyway.mapsActivity.fragments.MarkersListFragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -111,5 +111,13 @@ public class MapsActivity extends FragmentActivity {
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null) // Pozwala wrócić do poprzedniego ekranu
                 .commit();
+    }
+
+    public static Fragment getMarkersListFragment() {
+        return markersListFragment;
+    }
+
+    public static Fragment getMapFragment() {
+        return mapFragment;
     }
 }

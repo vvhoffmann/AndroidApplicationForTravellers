@@ -16,7 +16,7 @@ public class MarkersRepository {
     private static LinkedList<Marker> markers = new LinkedList<>();
     private static LinkedHashMap<LatLng,Marker> markersMap = new LinkedHashMap<>();
     private static double[][] distances ;
-    private static int size = 0;
+    private static int size = 1;
 
     private static boolean areDistancesCalculated = false;
 
@@ -49,6 +49,9 @@ public class MarkersRepository {
         markers.remove(marker);
         markersMap.remove(getLatLngFromMarker(marker));
         size--;
+
+        if(areDistancesCalculated)
+            setDistances();
     }
 
     public static double[][] getDistanceArray() {
@@ -57,10 +60,8 @@ public class MarkersRepository {
     }
 
     private static void setDistances() {
-        if(size > 2){
-            distances = PlacesUtils.getDistanceArray();
-            areDistancesCalculated = true;
-        }
+        distances = PlacesUtils.getDistanceArray();
+        areDistancesCalculated = true;
     }
 
     public static LinkedList<LatLng> getLatLngList() {
