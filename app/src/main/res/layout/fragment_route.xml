@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/resultTitle"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:padding="16dp"
         android:textAlignment="center"
         android:visibility="invisible"
@@ -46,11 +46,15 @@
     <TextView
         android:id="@+id/tvResultDescription"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:text=" "
         android:background="@color/quantum_bluegrey100"
-        android:padding="28dp"
-        android:textSize="18sp" />
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:visibility="visible"
+        />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -75,9 +79,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_margin="4dp"
-            android:radius="6dp"
             android:backgroundTint="@color/quantum_bluegrey600"
             android:padding="12dp"
+            android:radius="6dp"
             android:text="@string/edytuj_punkty"
             android:textColor="@android:color/white"
             android:visibility="invisible" />

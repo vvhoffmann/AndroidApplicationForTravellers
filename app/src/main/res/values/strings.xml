@@ -9,7 +9,7 @@
     <string name="map">Mapa</string>
     <string name="route">Wyznaczanie drogi</string>
     <string name="calculate">Oblicz trasę</string>
-    <string name="resultTitle">Długość:</string>
+    <string name="resultTitle">Długość trasy:</string>
     <string name="current_location">Obecna lokalizacja:</string>
     <string name="twoje_miejsca">Twoje miejsca:</string>
     <string name="title_list_fragment">Twoja optymalna trasa:</string>

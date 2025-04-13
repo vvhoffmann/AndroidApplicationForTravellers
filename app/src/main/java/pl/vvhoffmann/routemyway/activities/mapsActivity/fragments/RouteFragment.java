@@ -50,16 +50,15 @@ public class RouteFragment extends Fragment {
 
         double minDistance = 0.0;
 
-        //minDistance = routeModel.getDistance();
 
 
         if(MarkersRepository.getSize() > 2) {
             routeModel = RouteOptimizationService.getOptimalRoute();
-            Log.d("PathRoute", "Scieżka: " + routeModel);
-
+            minDistance = routeModel.getDistance();
             refreshList(listView);
 
             tvResultTitle.setVisibility(View.VISIBLE);
+            tvResultDescription.setVisibility(View.VISIBLE);
             tvResultDescription.setText(minDistance + " km");
             btnShowMap.setVisibility(View.VISIBLE);
             btnEditPoints.setVisibility(View.VISIBLE);
@@ -90,13 +89,11 @@ public class RouteFragment extends Fragment {
         }
         int size = routeModel.getSize();
 
-        // Sample data for the ListView
         String[] items = new String[size];
 
         for (int i = 0; i < size; i++)
             items[i] = routeModel.getMarkers().get(i).getTitle();
 
-        // Set up an adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);
     }

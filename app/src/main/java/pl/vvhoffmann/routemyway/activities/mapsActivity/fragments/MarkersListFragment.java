@@ -58,7 +58,6 @@ public class MarkersListFragment extends Fragment {
 
         });
 
-
         btnRemoveMarker.setOnClickListener(v -> {
             String selectedItem = (String) listView.getItemAtPosition(listView.getCheckedItemPosition());
             selectedMarker = MarkerUtils.createMarkerFromString(selectedItem);

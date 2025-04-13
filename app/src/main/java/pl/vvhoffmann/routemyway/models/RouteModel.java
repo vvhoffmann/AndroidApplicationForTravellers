@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.LinkedList;
 import java.util.List;
 
+import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
 import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
 public class RouteModel {
@@ -34,20 +35,11 @@ public class RouteModel {
         for (LatLng latLng : latLngList)
             markers.add(getMarkerByLatLng(latLng));
         size = markers.size();
-        //setDistance();
+        setDistance();
     }
 
     private void setDistance() {
-        distance =0;
-        for (int i = 0; i < markers.size() - 1; i++) {
-            LatLng start = markers.get(i).getPosition();
-            LatLng end = markers.get(i + 1).getPosition();
-            try {
-                distance += PlacesUtils.getWalkingRoute(start, end);
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        }
+        distance = HeldKarpAlgorithm.getDistance();
     }
 
     public double getDistance() {

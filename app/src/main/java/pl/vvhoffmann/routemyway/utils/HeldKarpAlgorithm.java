@@ -10,6 +10,7 @@ import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 
 public class HeldKarpAlgorithm {
     private static final double INF = Integer.MAX_VALUE;
+    private static double distance = 0.0;
 
     public static LinkedList<LatLng> getTSPSolution() {
         LinkedList<LatLng> points = MarkersRepository.getLatLngList();
@@ -61,6 +62,7 @@ public class HeldKarpAlgorithm {
             }
         }
 
+        distance = minTourCost;
         // Rekonstrukcja ścieżki
         LinkedList<LatLng> path = reconstructPath(parent, fullSet, lastCity, points);
         path.add(points.get(0)); // Powrót do startu
@@ -78,5 +80,9 @@ public class HeldKarpAlgorithm {
         path.add(points.get(0)); // Dodaj punkt startowy
         Collections.reverse(path);
         return path;
+    }
+
+    public static double getDistance() {
+        return distance;
     }
 }
