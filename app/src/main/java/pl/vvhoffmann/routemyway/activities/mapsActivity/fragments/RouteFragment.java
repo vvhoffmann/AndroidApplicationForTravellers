@@ -1,7 +1,6 @@
 package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +47,7 @@ public class RouteFragment extends Fragment {
 
         initializeUIComponents(view);
 
-        double minDistance = 0.0;
-
-
+        double minDistance;
 
         if(MarkersRepository.getSize() > 2) {
             routeModel = RouteOptimizationService.getOptimalRoute();

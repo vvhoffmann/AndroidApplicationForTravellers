@@ -1,4 +1,4 @@
-package pl.vvhoffmann.routemyway.mapsActivity.fragments;
+package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,17 +19,13 @@ import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-
-import java.util.LinkedHashMap;
 
 public class MarkersListFragment extends Fragment {
     private ListView listView;
     private Marker selectedMarker;
 
     private String[] items;
-
 
     @Nullable
     @Override

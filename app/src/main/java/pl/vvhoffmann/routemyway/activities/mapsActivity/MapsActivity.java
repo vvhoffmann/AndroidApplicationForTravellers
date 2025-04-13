@@ -12,7 +12,7 @@ import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.databinding.ActivityMapsBinding;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.MapFragment;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.RouteFragment;
-import pl.vvhoffmann.routemyway.mapsActivity.fragments.MarkersListFragment;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.MarkersListFragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

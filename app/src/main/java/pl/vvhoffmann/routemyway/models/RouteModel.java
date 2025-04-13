@@ -2,8 +2,6 @@ package pl.vvhoffmann.routemyway.models;
 
 import static pl.vvhoffmann.routemyway.utils.MarkerUtils.getMarkerByLatLng;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -13,21 +11,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
-import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
 public class RouteModel {
     private final LinkedList<Marker> markers;
     private int size = 0;
     private double distance = 0;
-    private double duration = 0;
 
-    // Getters and Setters
     public LinkedList<Marker> getMarkers() {
         return markers;
-    }
-
-    public RouteModel(List<Marker> markers) {
-        this.markers = (LinkedList<Marker>) markers;
     }
 
     public RouteModel(LinkedList<LatLng> latLngList) {
@@ -48,10 +39,6 @@ public class RouteModel {
 
     public int getSize() {
         return size;
-    }
-
-    public double getDuration() {
-        return duration;
     }
 
     @NonNull

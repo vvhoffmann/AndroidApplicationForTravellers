@@ -29,9 +29,9 @@ import pl.vvhoffmann.routemyway.constants.Constants;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.MapService;
+import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
 import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -169,17 +169,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 .setLocationRestriction(getRectangularBounds())
                                 .setOrigin(getCurrentPositionMarker().getPosition())
                                 .build();
-                placesClient.findAutocompletePredictions(autocompletePlacesRequest).addOnSuccessListener((response) -> {
-                    for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                        Log.i(TAG, "PREDI" + prediction.getPlaceId());
-                        Log.i(TAG, prediction.getPrimaryText(null).toString());
-                    }
-                }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        ApiException apiException = (ApiException) exception;
-                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-                    }
-                });
+
 
                 if (autocompleteFragment != null) {
 
@@ -202,6 +192,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Marker marker = MapService.getMap().addMarker(markerOptions);
                             assert marker != null;
                             MarkersRepository.addMarker(marker);
+                            if(RouteRepository.isRouteCalculated())
+                            {
+                                RouteOptimizationService.getOptimalRoute();
+                                getRouteFromDirectionsAPI();
+                            }
+
                         }
                         @Override
                         public void onError(@NonNull Status status) {
@@ -256,12 +252,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             btnRemoveMarker2.setOnClickListener(v -> {
                 Marker markerToRemove = getMarkerByLatLng(latLng);
                 Log.i("Marker to remove", "Marker to remove: " + markerToRemove.getPosition());
-                if (markerToRemove != null) {
-                    MarkersRepository.removeMarker(markerToRemove);
-                    markerToRemove.remove();
-                    Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
-                    btnRemoveMarker2.setVisibility(View.INVISIBLE);
-                }
+                MarkersRepository.removeMarker(markerToRemove);
+                markerToRemove.remove();
+                Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
+                btnRemoveMarker2.setVisibility(View.INVISIBLE);
             });
         });
 
@@ -348,7 +342,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Ustawienie widoku kamery
         if (!polylinePoints.isEmpty())
-            MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(polylinePoints.get(0), 6));
+            MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(polylinePoints.get(0), 15));
     }
 
     // Metoda do dekodowania Polyline z Directions API
