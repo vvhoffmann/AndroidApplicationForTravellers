@@ -21,4 +21,9 @@ public class RouteRepository {
         return isRouteCalculated;
     }
 
+    public static void resetRoute() {
+        route = null;
+        isRouteCalculated = false;
+    }
+
 }

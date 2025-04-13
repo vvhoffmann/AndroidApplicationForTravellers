@@ -1,6 +1,5 @@
 package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,15 +20,7 @@ import pl.vvhoffmann.routemyway.models.RouteModel;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
-import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
-import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class RouteFragment extends Fragment {
     Button btnShowMap;
@@ -73,9 +64,12 @@ public class RouteFragment extends Fragment {
             btnShowMap.setVisibility(View.VISIBLE);
             btnEditPoints.setVisibility(View.VISIBLE);
         }
+        else
+            RouteRepository.resetRoute();
 
         btnShowMap.setOnClickListener(v -> ((MapsActivity) requireActivity()).replaceFragment(MapsActivity.getMapFragment()));
-
+        btnEditPoints.setOnClickListener(v -> ((MapsActivity) requireActivity()).replaceFragment(MapsActivity.getMarkersListFragment()));
+        
         return view;
     }
 
@@ -95,6 +89,7 @@ public class RouteFragment extends Fragment {
             return;
         }
         int size = routeModel.getSize();
+
         // Sample data for the ListView
         String[] items = new String[size];
 

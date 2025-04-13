@@ -6,6 +6,7 @@ import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getCurrent
 import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getMarkerByLatLng;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import pl.vvhoffmann.routemyway.RouteMyWayActivity;
 import pl.vvhoffmann.routemyway.config.AppConfig;
 import pl.vvhoffmann.routemyway.constants.Constants;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
+import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.MapService;
 import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
@@ -42,6 +44,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.Place;
@@ -51,8 +55,18 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
@@ -89,12 +103,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
-            mapFragment.getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
 
         initializeComponents(view);
-
-
         return view;
     }
 
@@ -113,6 +124,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         btnShowRoute.setVisibility(View.INVISIBLE);
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         geocoder = new Geocoder(requireContext(), Locale.getDefault());
@@ -275,12 +287,103 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
-        refreshMapMarkers(geocoder);
+        Log.i(TAG, "onResume: ");
+        if(RouteRepository.isRouteCalculated()){
+            getRouteFromDirectionsAPI();
+            Log.i(TAG, "onResume: Route drawn");
+        }
+        else{
+            refreshMapMarkers(geocoder);
+            Log.i(TAG, "onResume: Markers refreshed");
+        }
+
     }
+
+    private void getRouteFromDirectionsAPI() {
+        String urlString = MapService.getRouteUrl();
+
+        // Wykonanie zapytania w osobnym wątku
+        new Thread(() -> {
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                // Parsowanie odpowiedzi JSON
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                JSONArray routes = jsonResponse.getJSONArray("routes");
+                if (routes.length() > 0) {
+                    JSONObject route = routes.getJSONObject(0);
+                    JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
+                    String encodedPolyline = overviewPolyline.getString("points");
+
+                    // Dekodowanie Polyline i rysowanie trasy
+                    List<LatLng> polylinePoints = decodePolyline(encodedPolyline);
+                    requireActivity().runOnUiThread(() -> drawRoute(polylinePoints));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void drawRoute(List<LatLng> polylinePoints) {
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .addAll(polylinePoints)
+                .clickable(true)
+                .color(com.google.android.libraries.places.R.color.quantum_googblue);
+
+        Polyline polyline = MapService.getMap().addPolyline(polylineOptions);
+
+        // Ustawienie widoku kamery
+        if (!polylinePoints.isEmpty())
+            MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(polylinePoints.get(0), 6));
+    }
+
+    // Metoda do dekodowania Polyline z Directions API
+    private List<LatLng> decodePolyline(String encoded) {
+        List<LatLng> polyline = new ArrayList<>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((lat / 1E5), (lng / 1E5));
+            polyline.add(p);
+        }
+
+        return polyline;
+    }
+
 
     private static void refreshMapMarkers(Geocoder geocoder) {
         if(MapService.getMap() != null)

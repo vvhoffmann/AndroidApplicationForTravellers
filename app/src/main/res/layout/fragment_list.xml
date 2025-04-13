@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="12dp">
 
     <!-- Pierwszy TextView -->
     <TextView
@@ -15,7 +15,7 @@
         android:paddingBottom="8dp"
         android:text="@string/twoje_miejsca"
         android:textAlignment="center"
-        android:textSize="21dp" />
+        android:textSize="21sp" />
 
 
     <!-- ListView -->
@@ -33,9 +33,12 @@
     <!-- Czwarty TextView -->
     <TextView
         android:id="@+id/textView3"
+        android:text="@string/del_point_desc"
+        android:textColor="@color/quantum_grey500"
+        android:textAlignment="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:paddingTop="8dp"
         android:padding="16dp"/>
 
@@ -45,6 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/usun_marker"
+        android:radius="6dp"
         android:backgroundTint="@color/quantum_bluegrey600"
         android:textColor="@android:color/white"
         android:padding="12dp"/>

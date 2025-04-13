@@ -12,7 +12,7 @@
     <string name="resultTitle">Długość:</string>
     <string name="current_location">Obecna lokalizacja:</string>
     <string name="twoje_miejsca">Twoje miejsca:</string>
-    <string name="titleCalculate">Wyznacz trasę podróży:</string>
+    <string name="title_list_fragment">Twoja optymalna trasa:</string>
     <string name="desc">Aplikacja wspomagająca wyznaczenie pseudooptymalnej trasy na mapie wśród zadanych punktów</string>
     <string name="usun_marker">Usuń Marker</string>
     <string name="pokaz_tras">Pokaż trasę</string>
@@ -20,4 +20,5 @@
     <string name="edytuj_punkty">Edytuj Punkty</string>
     <string name="location_permission">Udostępnianie lokalizacji</string>
     <string name="show_route">Pokaż trasę</string>
+    <string name="del_point_desc">Kliknięcie w wybrany punkt umożliwia usunięcie go z listy</string>
 </resources>

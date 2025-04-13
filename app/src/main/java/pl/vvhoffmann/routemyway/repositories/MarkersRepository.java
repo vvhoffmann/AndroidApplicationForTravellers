@@ -17,9 +17,7 @@ public class MarkersRepository {
     private static LinkedHashMap<LatLng,Marker> markersMap = new LinkedHashMap<>();
     private static double[][] distances ;
     private static int size = 1;
-
     private static boolean areDistancesCalculated = false;
-
 
     public static void addMarker(Marker marker) {
         markers.add(marker);

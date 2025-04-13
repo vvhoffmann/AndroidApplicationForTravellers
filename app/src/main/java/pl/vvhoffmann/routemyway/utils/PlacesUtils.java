@@ -6,13 +6,15 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -41,16 +43,9 @@ public class PlacesUtils {
                 String text = "ul. " + address.getThoroughfare() + " " + address.getSubThoroughfare() + ", " + address.getLocality();
                 placeDescription = !address.getFeatureName().matches(".*[" + characters + "].*") ? text : address.getFeatureName() + ", " + text;
             }
-            else{
-                placeDescription = "[ " + latLng.latitude + ", " + latLng.longitude + " ]";
-            }
-
-            /*
-            if(address.getFeatureName() != null && address.getFeatureName().matches(".*[" + characters + "].*") )
-                placeDescription = address.getFeatureName();
             else
-                placeDescription =  "ul. " + address.getThoroughfare() + " " + address.getSubThoroughfare() + ", " + address.getLocality();
-            */
+                placeDescription = "[ " + latLng.latitude + ", " + latLng.longitude + " ]";
+
         } catch (Exception e) {
             Log.e(TAG, "Error retrieving place description", e);
         }
@@ -62,9 +57,9 @@ public class PlacesUtils {
         LinkedList<LatLng> points = MarkersRepository.getLatLngList();
 
         int n = points.size();
-        double[][] dist = new double[n][n]; // Macierz odległości
+        double[][] dist = new double[n][n];
 
-        // Używamy ExecutorService do obsługi wielu zapytań jednocześnie
+        // ExecutorService do obsługi wielu zapytań jednocześnie
         ExecutorService executor = Executors.newFixedThreadPool(10);
         ArrayList<Future<Double>> results = new ArrayList<>();
 
@@ -80,18 +75,40 @@ public class PlacesUtils {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 try {
-                    dist[i][j] = results.get(index++).get(); // Pobieranie wyniku
+                    dist[i][j] = results.get(index++).get();
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
 
-        executor.shutdown(); // Zatrzymujemy wątki
+        executor.shutdown();
         return dist;
     }
 
+
     public static double getWalkingRoute(LatLng origin, LatLng destination) throws Exception {
+        String response = getPlacesAPIResponse(origin, destination);
+        return parseDistance(response);
+    }
+
+    @NonNull
+    public static String getPlacesAPIResponse(LatLng origin, LatLng destination) throws IOException {
+        HttpURLConnection connection = getHttpURLConnection(origin, destination);
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = bufferedReader.readLine()) != null)
+            response.append(line);
+
+        bufferedReader.close();
+        return response.toString();
+    }
+
+    @NonNull
+    private static HttpURLConnection getHttpURLConnection(LatLng origin, LatLng destination) throws IOException {
         String requestUrl = "https://maps.googleapis.com/maps/api/directions/json?origin="
                 + origin.latitude + "," + origin.longitude
                 + "&destination=" + destination.latitude + "," + destination.longitude
@@ -102,17 +119,7 @@ public class PlacesUtils {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.connect();
-
-        InputStream inputStream = connection.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            response.append(line);
-        }
-
-        return parseDistance(response.toString());
+        return connection;
     }
 
     private static double parseDistance(String jsonResponse) throws Exception {
