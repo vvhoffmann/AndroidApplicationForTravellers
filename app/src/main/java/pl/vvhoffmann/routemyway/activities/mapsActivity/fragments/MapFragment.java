@@ -65,12 +65,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
-    private PlacesClient placesClient;
     private AutocompleteSupportFragment autocompleteFragment;
 
     private Button btnRemoveMarker;
@@ -87,7 +85,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Inicjalizacja Places API
         if (!Places.isInitialized()) {
             Places.initializeWithNewPlacesApiEnabled(requireContext(), AppConfig.GOOGLE_MAPS_API_KEY);
-            placesClient = Places.createClient(getContext());
+            PlacesClient placesClient = Places.createClient(getContext());
         }
     }
 
