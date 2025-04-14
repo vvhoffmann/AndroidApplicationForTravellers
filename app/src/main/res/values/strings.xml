@@ -21,4 +21,5 @@
     <string name="location_permission">Udostępnianie lokalizacji</string>
     <string name="show_route">Pokaż trasę</string>
     <string name="del_point_desc">Kliknięcie w wybrany punkt umożliwia usunięcie go z listy</string>
+    <string name="nawiguj_z_google_maps">Nawiguj z Google Maps</string>
 </resources>

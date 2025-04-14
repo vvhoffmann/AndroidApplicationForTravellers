@@ -47,4 +47,21 @@
         android:text="@string/usun_marker"
         android:textColor="@android:color/white" />
 
+    <Button
+        android:id="@+id/btnRedirectToGoogleMaps"
+        android:layout_width="382dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="18dp"
+        android:backgroundTint="@color/quantum_bluegrey600"
+        android:padding="12dp"
+        android:text="@string/nawiguj_z_google_maps"
+        android:textColor="@android:color/white"
+        android:visibility="invisible"/>
+
 </RelativeLayout>

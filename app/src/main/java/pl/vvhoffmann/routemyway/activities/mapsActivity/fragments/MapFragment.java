@@ -6,8 +6,10 @@ import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getCurrent
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import okhttp3.Route;
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.RouteMyWayActivity;
 import pl.vvhoffmann.routemyway.config.AppConfig;
@@ -29,6 +32,7 @@ import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.MapService;
 import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
+import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 import pl.vvhoffmann.routemyway.utils.PlacesUtils;
 
 import com.google.android.gms.common.api.Status;
@@ -72,6 +76,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private AutocompleteSupportFragment autocompleteFragment;
 
     private Button btnRemoveMarker;
+    private Button btnRedirectWithGoogleMaps;
 
     private Geocoder geocoder;
 
@@ -111,6 +116,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         btnRemoveMarker = view.findViewById(R.id.btnDeleteMarker);
         btnRemoveMarker.setVisibility(View.INVISIBLE);
+
+        btnRedirectWithGoogleMaps = view.findViewById(R.id.btnRedirectToGoogleMaps);
 
     }
 
@@ -258,8 +265,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             return true;
         });
-
     }
+
+
 
     @Override
     public void onResume() {
@@ -267,6 +275,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Log.i(TAG, "onResume: ");
         if(RouteRepository.isRouteCalculated()){
             getRouteFromDirectionsAPI();
+            btnRemoveMarker.setVisibility(View.INVISIBLE);
+            btnRedirectWithGoogleMaps.setVisibility(View.VISIBLE);
+
+            btnRedirectWithGoogleMaps.setOnClickListener(v -> {
+                String url = getGoogleMapsRedirectUrl();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setPackage("com.google.android.apps.maps");
+                startActivity(intent);
+            });
+            Toast.makeText(requireContext(), "Your final route", Toast.LENGTH_SHORT).show();
             Log.i(TAG, "onResume: Route drawn");
         }
         else{
@@ -274,6 +292,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Log.i(TAG, "onResume: Markers refreshed");
         }
 
+    }
+
+    private String getGoogleMapsRedirectUrl() {
+        LatLng origin = MarkersRepository.getCurrentPositionMarker().getPosition();
+        LatLng destination = MarkersRepository.getCurrentPositionMarker().getPosition();
+        List<LatLng> waypoints = MarkerUtils.getLatLngFromMarkers(RouteRepository.getRoute().getMarkers());
+        // Budowanie URL-a z punktami pośrednimi
+        StringBuilder urlBuilder = new StringBuilder("https://www.google.com/maps/dir/?api=1");
+        urlBuilder.append("&origin=").append(origin.latitude).append(",").append(origin.longitude);
+        urlBuilder.append("&destination=").append(destination.latitude).append(",").append(destination.longitude);
+
+        if (!waypoints.isEmpty()) {
+            urlBuilder.append("&waypoints=");
+            for (int i = 0; i < waypoints.size(); i++) {
+                LatLng waypoint = waypoints.get(i);
+                if(waypoint.equals(origin))
+                    continue;
+                urlBuilder.append(waypoint.latitude).append(",").append(waypoint.longitude);
+                if (i < waypoints.size() - 1) {
+                    urlBuilder.append("|"); // Oddzielanie punktów "|" (pipe symbol)
+                }
+            }
+        }
+        return urlBuilder.toString();
     }
 
     private void getRouteFromDirectionsAPI() {
