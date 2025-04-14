@@ -3,7 +3,6 @@ package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 import static android.content.ContentValues.TAG;
 
 import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getCurrentPositionMarker;
-import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getMarkerByLatLng;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -47,7 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompletePrediction;
+
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
@@ -75,8 +74,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private AutocompleteSupportFragment autocompleteFragment;
 
     private Button btnRemoveMarker;
-    private Button btnRemoveMarker2;
-    private Button btnShowRoute;
 
     private Geocoder geocoder;
 
@@ -117,11 +114,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         btnRemoveMarker = view.findViewById(R.id.btnDeleteMarker);
         btnRemoveMarker.setVisibility(View.INVISIBLE);
 
-        btnRemoveMarker2 = view.findViewById(R.id.btnDeleteMarker2);
-        btnRemoveMarker2.setVisibility(View.INVISIBLE);
-
-        btnShowRoute = view.findViewById(R.id.btnShowRoute);
-        btnShowRoute.setVisibility(View.INVISIBLE);
     }
 
     @SuppressLint("PotentialBehaviorOverride")
@@ -182,7 +174,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public void onPlaceSelected(@NonNull Place place) {
                             btnRemoveMarker.setVisibility(View.INVISIBLE);
-                            btnRemoveMarker2.setVisibility(View.INVISIBLE);
                             // Obsługa wyboru miejsca
                             MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(Objects.requireNonNull(place.getLatLng()), 15));
                             MarkerOptions markerOptions = new MarkerOptions()
@@ -247,29 +238,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
             btnRemoveMarker.setVisibility(View.INVISIBLE);
-            btnRemoveMarker2.setVisibility(View.VISIBLE);
-
-            btnRemoveMarker2.setOnClickListener(v -> {
-                Marker markerToRemove = getMarkerByLatLng(latLng);
-                Log.i("Marker to remove", "Marker to remove: " + markerToRemove.getPosition());
-                MarkersRepository.removeMarker(markerToRemove);
-                markerToRemove.remove();
-                Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
-                btnRemoveMarker2.setVisibility(View.INVISIBLE);
-            });
         });
 
 
         MapService.getMap().setOnMarkerClickListener(marker -> {
             Log.i(TAG, "Size: " + MarkersRepository.getLatLngList().size() + " " + MarkersRepository.getSize());
             marker.showInfoWindow();
-            btnRemoveMarker2.setVisibility(View.INVISIBLE);
             btnRemoveMarker.setVisibility(View.VISIBLE);
             Log.i("Marker clicked", "Marker clicked: " + marker.getTitle() + " " + marker.getPosition());
 
             btnRemoveMarker.setOnClickListener(v -> {
                 Log.i("Marker to remove", "Marker to remove: " + marker.getTitle() + "  "+ marker.getPosition());
-                MarkersRepository.removeMarker(marker);
+                Marker selectedMarker = MarkersRepository.getMarkerByLatLng(marker.getPosition());
+                MarkersRepository.removeMarker(selectedMarker);
+
                 marker.remove();
 
                 Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
