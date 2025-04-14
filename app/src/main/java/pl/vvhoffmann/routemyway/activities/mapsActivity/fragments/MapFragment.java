@@ -8,6 +8,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import okhttp3.Route;
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.RouteMyWayActivity;
 import pl.vvhoffmann.routemyway.config.AppConfig;
@@ -358,7 +358,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         PolylineOptions polylineOptions = new PolylineOptions()
                 .addAll(polylinePoints)
                 .clickable(true)
-                .color(com.google.android.libraries.places.R.color.quantum_googblue);
+                .color(Color.GREEN);
 
         Polyline polyline = MapService.getMap().addPolyline(polylineOptions);
 
