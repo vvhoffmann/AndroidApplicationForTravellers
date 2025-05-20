@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.RouteMyWayActivity;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
 import pl.vvhoffmann.routemyway.config.AppConfig;
 import pl.vvhoffmann.routemyway.constants.Constants;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
@@ -90,7 +91,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Inicjalizacja Places API
         if (!Places.isInitialized()) {
             Places.initializeWithNewPlacesApiEnabled(requireContext(), AppConfig.GOOGLE_MAPS_API_KEY);
-            PlacesClient placesClient = Places.createClient(getContext());
+            Places.createClient(requireContext());
         }
     }
 
@@ -113,10 +114,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
         btnRemoveMarker = view.findViewById(R.id.btnDeleteMarker);
         btnRemoveMarker.setVisibility(View.INVISIBLE);
-
         btnRedirectWithGoogleMaps = view.findViewById(R.id.btnRedirectToGoogleMaps);
 
     }
@@ -167,14 +166,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 .setOrigin(getCurrentPositionMarker().getPosition())
                                 .build();
 
-
                 if (autocompleteFragment != null) {
-
                     autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
                     autocompleteFragment.setHint("Wyszukaj miejsce");
-
                     autocompleteFragment.setLocationRestriction(getRectangularBounds());
-
                     autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                         @Override
                         public void onPlaceSelected(@NonNull Place place) {
@@ -188,12 +183,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Marker marker = MapService.getMap().addMarker(markerOptions);
                             assert marker != null;
                             MarkersRepository.addMarker(marker);
-                            if(RouteRepository.isRouteCalculated())
-                            {
-                                RouteOptimizationService.getOptimalRoute();
-                                getRouteFromDirectionsAPI();
+                            if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > 2) {
+                                RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
+                                onResume();
                             }
-
                         }
                         @Override
                         public void onError(@NonNull Status status) {
@@ -240,6 +233,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             .position(latLng)
                             .title(placeDescription));
                     MarkersRepository.addMarker(marker);
+                    if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > 2){
+                        RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
+                        
+                    }
+
                 }
             }
             btnRemoveMarker.setVisibility(View.INVISIBLE);
@@ -259,6 +257,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                 marker.remove();
 
+                if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > 2)
+                    RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
+
                 Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
                 btnRemoveMarker.setVisibility(View.INVISIBLE);
             });
@@ -268,30 +269,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-
     @Override
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume: ");
         if(RouteRepository.isRouteCalculated()){
-            getRouteFromDirectionsAPI();
-            btnRemoveMarker.setVisibility(View.INVISIBLE);
-            btnRedirectWithGoogleMaps.setVisibility(View.VISIBLE);
-
-            btnRedirectWithGoogleMaps.setOnClickListener(v -> {
-                String url = getGoogleMapsRedirectUrl();
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.setPackage("com.google.android.apps.maps");
-                startActivity(intent);
-            });
-            Toast.makeText(requireContext(), "Your final route", Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "onResume: Route drawn");
+            displayRoute();
         }
         else{
             refreshMapMarkers(geocoder);
             Log.i(TAG, "onResume: Markers refreshed");
         }
+    }
 
+    private void displayRoute() {
+        getRouteFromDirectionsAPI();
+        btnRemoveMarker.setVisibility(View.INVISIBLE);
+        btnRedirectWithGoogleMaps.setVisibility(View.VISIBLE);
+
+        btnRedirectWithGoogleMaps.setOnClickListener(v -> {
+            String url = getGoogleMapsRedirectUrl();
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setPackage("com.google.android.apps.maps");
+            startActivity(intent);
+        });
+        Toast.makeText(requireContext(), "Twoja trasa wynikowa", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "onResume: Route drawn");
     }
 
     private String getGoogleMapsRedirectUrl() {
@@ -368,7 +371,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     // Metoda do dekodowania Polyline z Directions API
-    private List<LatLng> decodePolyline(String encoded) {
+    public List<LatLng> decodePolyline(String encoded) {
         List<LatLng> polyline = new ArrayList<>();
         int index = 0, len = encoded.length();
         int lat = 0, lng = 0;
@@ -401,7 +404,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-    private static void refreshMapMarkers(Geocoder geocoder) {
+    public static void refreshMapMarkers(Geocoder geocoder) {
         if(MapService.getMap() != null)
             MapService.getMap().clear();
 

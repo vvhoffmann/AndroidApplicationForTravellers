@@ -120,4 +120,6 @@ public class MapsActivity extends FragmentActivity {
     public static Fragment getMapFragment() {
         return mapFragment;
     }
+
+
 }

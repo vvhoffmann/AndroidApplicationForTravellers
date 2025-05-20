@@ -56,7 +56,7 @@ public class RouteFragment extends Fragment {
 
             tvResultTitle.setVisibility(View.VISIBLE);
             tvResultDescription.setVisibility(View.VISIBLE);
-            tvResultDescription.setText(minDistance + " km");
+            tvResultDescription.setText(Math.round(minDistance * 100.0)/100.0 + " km");
             btnShowMap.setVisibility(View.VISIBLE);
             btnEditPoints.setVisibility(View.VISIBLE);
         }

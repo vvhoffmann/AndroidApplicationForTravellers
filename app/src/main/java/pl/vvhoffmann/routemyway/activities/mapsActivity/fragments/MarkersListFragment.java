@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
+import pl.vvhoffmann.routemyway.repositories.RouteRepository;
+import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 
 import com.google.android.gms.maps.model.Marker;
@@ -82,6 +84,11 @@ public class MarkersListFragment extends Fragment {
         if (!MarkersRepository.getMarkers().isEmpty() &&  MarkersRepository.containsMarker(selectedMarker)) {
             MarkersRepository.removeMarker(selectedMarker);
             Toast.makeText(requireContext(), "Marker usunięty", Toast.LENGTH_SHORT).show();
+
+            if(RouteRepository.isRouteCalculated())
+                RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
+
+
         } else {
             Toast.makeText(requireContext(), "Brak markerów do usunięcia", Toast.LENGTH_SHORT).show();
         }
