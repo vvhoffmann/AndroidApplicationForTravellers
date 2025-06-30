@@ -1,24 +1,9 @@
 package pl.vvhoffmann.routemyway.utils;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 public class PointUtils
 {
-    public static ArrayList<LatLng> createRandomPoints(int size) {
-        ArrayList<LatLng> ArrayList = new ArrayList<>(size);
-        Random random = new Random();
-        for(int i=0;i<size;++i){
-            LatLng point = new LatLng(random.nextInt(90),random.nextInt(90));
-            if(ArrayList.contains(point)) --i;
-            else ArrayList.add(point);
-        }
-        System.out.println(" ");
-        return ArrayList;
-    }
-
-    public static double calculateShortestWalatToPoint(LatLng a, LatLng b, LatLng p)
+    public static double calculateShortestWayToPoint(LatLng a, LatLng b, LatLng p)
     {
         return Math.min(Math.min(distance(a,p),distance(b,p)),distance(projection(a, b, p),p));
     }
@@ -33,7 +18,6 @@ public class PointUtils
                 (a.latitude*BAy2+CAlng*BAy*BAlng+c.latitude*BAy2)/BA2
         );
     }
-
 
     public static boolean less(LatLng a,LatLng b)
     {

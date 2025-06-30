@@ -28,11 +28,9 @@ public class RouteMyWayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Włączanie EdgeToEdge dla aplikacji
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_route_my_way);
 
-        // Ustawienie paddingu w zależności od systemowych pasków
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -41,11 +39,8 @@ public class RouteMyWayActivity extends AppCompatActivity {
 
         initializeUIComponents();
 
-        switchLocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            locationEnabled = isChecked;
-        });
+        switchLocation.setOnCheckedChangeListener((buttonView, isChecked) -> locationEnabled = isChecked);
 
-        // Obsługa kliknięcia na przycisk
         btnToApp.setOnClickListener(v -> {
             ToastService.showToast("Witaj w aplikacji!!", RouteMyWayActivity.this);
             navigateToMapsActivity();
@@ -53,7 +48,6 @@ public class RouteMyWayActivity extends AppCompatActivity {
     }
 
     private void initializeUIComponents() {
-        // Inicjalizacja komponentów UI
         title = findViewById(R.id.tvTitle);
         description = findViewById(R.id.tvDesc);
         btnToApp = findViewById(R.id.btnToApp);

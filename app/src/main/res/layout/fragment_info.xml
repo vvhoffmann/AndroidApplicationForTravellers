@@ -1,0 +1,86 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvInfoTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:paddingBottom="16dp"
+            android:text="@string/title_info"
+            android:textAlignment="center"
+            android:textSize="22sp"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/tvInfoContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingBottom="24dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/info_content"
+            android:textSize="14sp"
+            android:justificationMode="inter_word"
+            android:textColor="@android:color/black" />
+
+
+        <TextView
+            android:id="@+id/tvInfoGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingBottom="24dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/google_info"
+            android:justificationMode="inter_word"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/tvPrivacyPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:fontFamily="sans-serif-medium"
+            android:textAlignment="center"
+            android:paddingBottom="10dp"
+            android:text="Zapoznaj się z Polityką prywatności:\n https://policies.google.com/privacy"
+         />
+
+        <TextView
+            android:id="@+id/tvTermsOfService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:autoLink="web"
+            android:textAlignment="center"
+            android:paddingBottom="10dp"
+            android:text="Zapoznaj się z warunkami korzystania z google maps:\n https://maps.google.com/help/terms_maps/"
+        />
+
+
+        <TextView
+            android:id="@+id/tvInfoAuthor"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:fontFamily="sans-serif-medium"
+            android:paddingTop="20dp"
+            android:text="@string/author"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </LinearLayout>
+</ScrollView>

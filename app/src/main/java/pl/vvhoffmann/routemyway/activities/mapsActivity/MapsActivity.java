@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import pl.vvhoffmann.routemyway.R;
+import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.InformationFragment;
 import pl.vvhoffmann.routemyway.databinding.ActivityMapsBinding;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.MapFragment;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.fragments.RouteFragment;
@@ -26,6 +27,7 @@ public class MapsActivity extends FragmentActivity {
     private static Fragment mapFragment;
     private static Fragment markersListFragment;
     private static Fragment routeFragment;
+    private static Fragment infoFragment;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -52,10 +54,11 @@ public class MapsActivity extends FragmentActivity {
         checkLocationPermission();
     }
 
-    private void initializeFragments() {
+    public void initializeFragments() {
         mapFragment = new MapFragment();
         markersListFragment = new MarkersListFragment();
         routeFragment = new RouteFragment();
+        infoFragment = new InformationFragment();
     }
 
     private void showFragment(Fragment selectedFragment) {
@@ -90,6 +93,9 @@ public class MapsActivity extends FragmentActivity {
                         break;
                     case R.id.nav_route:
                         selectedFragment = routeFragment;
+                        break;
+                    case R.id.nav_info:
+                        selectedFragment = infoFragment;
                         break;
                     case R.id.nav_map:
                     default:

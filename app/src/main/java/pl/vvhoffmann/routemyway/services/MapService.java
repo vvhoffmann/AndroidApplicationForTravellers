@@ -1,39 +1,49 @@
 package pl.vvhoffmann.routemyway.services;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import pl.vvhoffmann.routemyway.config.AppConfig;
+import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
+import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 
 public class MapService {
     private static GoogleMap map;
     private static LinkedList<MarkerOptions> markerOptionsList;
 
-    public void addMarker(Marker marker) {
-        MarkerOptions markerOptions = new MarkerOptions().position(marker.getPosition()).title(marker.getTitle());
-        map.addMarker(markerOptions);
-        markerOptionsList.add(markerOptions);
+    public static String getGoogleMapsRedirectUrl() {
+        LatLng origin = MarkersRepository.getCurrentPositionMarker().getPosition();
+        List<LatLng> waypoints = MarkerUtils.getLatLngFromMarkers(RouteRepository.getRoute().getMarkers());
+        return buildGoogleMapsRedirectUrl(origin, waypoints);
+    }
+
+    @NonNull
+    private static String buildGoogleMapsRedirectUrl(LatLng origin, List<LatLng> waypoints) {
+        StringBuilder urlBuilder = new StringBuilder("https://www.google.com/maps/dir/?api=1");
+        urlBuilder.append("&origin=").append(origin.latitude).append(",").append(origin.longitude);
+        urlBuilder.append("&destination=").append(origin.latitude).append(",").append(origin.longitude);
+
+        if (!waypoints.isEmpty()) {
+            urlBuilder.append("&waypoints=");
+            for (int i = 0; i < waypoints.size(); i++) {
+                LatLng waypoint = waypoints.get(i);
+                if (waypoint.equals(origin))
+                    continue;
+                urlBuilder.append(waypoint.latitude).append(",").append(waypoint.longitude);
+                if (i < waypoints.size() - 1) {
+                    urlBuilder.append("|"); // Oddzielanie punktów "|" (pipe symbol)
+                }
+            }
+        }
+        return urlBuilder.toString();
     }
 
     @NonNull

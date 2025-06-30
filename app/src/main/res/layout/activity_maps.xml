@@ -19,5 +19,9 @@
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/bottom_navigation"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        app:labelVisibilityMode="labeled"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemTextAppearanceActive="@style/BottomNavLabel.Small"
+        app:itemTextAppearanceInactive="@style/BottomNavLabel.Small"/>
 </RelativeLayout>

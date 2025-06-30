@@ -26,15 +26,16 @@ import androidx.fragment.app.Fragment;
 
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.RouteMyWayActivity;
-import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
 import pl.vvhoffmann.routemyway.config.AppConfig;
 import pl.vvhoffmann.routemyway.constants.Constants;
+import pl.vvhoffmann.routemyway.constants.Messages;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.MapService;
 import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 import pl.vvhoffmann.routemyway.utils.PlacesUtils;
+import pl.vvhoffmann.routemyway.utils.PolylineUtils;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -54,8 +55,6 @@ import com.google.android.libraries.places.api.Places;
 
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
@@ -66,7 +65,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -117,7 +115,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         btnRemoveMarker = view.findViewById(R.id.btnDeleteMarker);
         btnRemoveMarker.setVisibility(View.INVISIBLE);
         btnRedirectWithGoogleMaps = view.findViewById(R.id.btnRedirectToGoogleMaps);
-
     }
 
     @SuppressLint("PotentialBehaviorOverride")
@@ -126,10 +123,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         geocoder = new Geocoder(requireContext(), Locale.getDefault());
 
         MapService.setMap(googleMap);
-
         refreshMapMarkers(geocoder);
-
-        MapService.getMap().getUiSettings().setZoomControlsEnabled(true);
+        getMap().getUiSettings().setZoomControlsEnabled(true);
 
 
         if (RouteMyWayActivity.locationEnabled) {
@@ -140,14 +135,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 return;
             }
 
-            MapService.getMap().setMyLocationEnabled(true);
+            getMap().setMyLocationEnabled(true);
 
             // Pobieranie ostatniej lokalizacji
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                if (location != null && MapService.getMap() != null) {
+                if (location != null && getMap() != null) {
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    Marker currentPositionMarker = MapService.getMap().addMarker(new MarkerOptions()
+                    Marker currentPositionMarker = getMap().addMarker(new MarkerOptions()
                             .position(currentLatLng)
                             .title("Twoja lokalizacja - " + PlacesUtils.getPlaceDescription(currentLatLng, geocoder))
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
@@ -155,35 +150,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     if (MarkersRepository.getCurrentPositionMarker() == null)
                         MarkersRepository.setCurrentPositionMarker(currentPositionMarker);
 
-                    MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
+                    getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
                 } else {
                     Toast.makeText(requireContext(), "Brak lokalizacji", Toast.LENGTH_SHORT).show();
                 }
 
-                final FindAutocompletePredictionsRequest autocompletePlacesRequest =
-                        FindAutocompletePredictionsRequest.builder()
-                                .setLocationRestriction(getRectangularBounds())
-                                .setOrigin(getCurrentPositionMarker().getPosition())
-                                .build();
+//                final FindAutocompletePredictionsRequest autocompletePlacesRequest =
+//                        FindAutocompletePredictionsRequest.builder()
+//                                .setLocationRestriction(getRectangularBounds())
+//                                .setOrigin(getCurrentPositionMarker().getPosition())
+//                                .build();
 
                 if (autocompleteFragment != null) {
                     autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
-                    autocompleteFragment.setHint("Wyszukaj miejsce");
+                    autocompleteFragment.setHint(Messages.AUTOCOMPLETE_HINT_MESSAGE);
                     autocompleteFragment.setLocationRestriction(getRectangularBounds());
                     autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                         @Override
                         public void onPlaceSelected(@NonNull Place place) {
                             btnRemoveMarker.setVisibility(View.INVISIBLE);
                             // Obsługa wyboru miejsca
-                            MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(Objects.requireNonNull(place.getLatLng()), 15));
+                            getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(Objects.requireNonNull(place.getLatLng()), 15));
                             MarkerOptions markerOptions = new MarkerOptions()
                                     .position(place.getLatLng())
                                     .title(PlacesUtils.getPlaceDescription(place.getLatLng(), geocoder))
                                     .icon(BitmapDescriptorFactory.defaultMarker());
-                            Marker marker = MapService.getMap().addMarker(markerOptions);
+                            Marker marker = getMap().addMarker(markerOptions);
                             assert marker != null;
                             MarkersRepository.addMarker(marker);
-                            if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > 2) {
+                            if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
                                 RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
                                 onResume();
                             }
@@ -197,43 +192,43 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             }).addOnFailureListener(e -> {
                 Log.e(TAG, "Error getting location", e);
-                Toast.makeText(requireContext(), "Nie udało się pobrać lokalizacji.", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), Messages.NOT_UPLOADED_LOCATION_MESSAGE, Toast.LENGTH_LONG).show();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException exc) {
                     throw new RuntimeException(exc);
                 }
-                Toast.makeText(requireContext(), Constants.NOT_UPLOADED_LOCATION_INFO_MESSAGE, Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), Messages.NOT_UPLOADED_LOCATION_INFO_MESSAGE, Toast.LENGTH_LONG).show();
             });
         } else {
-            Toast.makeText(requireContext(), "Nie udostępniono lokalizacji.", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), Messages.NOT_SHARED_LOCATION_MESSAGE, Toast.LENGTH_LONG).show();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            Toast.makeText(requireContext(), Constants.NOT_UPLOADED_LOCATION_INFO_MESSAGE, Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), Messages.NOT_UPLOADED_LOCATION_INFO_MESSAGE, Toast.LENGTH_LONG).show();
         }
 
         // Obsługa kliknięcia na mapę
-        MapService.getMap().setOnMapClickListener(latLng -> {
+        getMap().setOnMapClickListener(latLng -> {
             if (Math.abs(latLng.latitude - getCurrentPositionMarker().getPosition().latitude) > 0.2 ||
                     Math.abs(latLng.longitude - getCurrentPositionMarker().getPosition().longitude) > 0.2) {
-                Toast.makeText(getContext(), Constants.TOO_FUTHER_LOCATION_MESSAGE, Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), Messages.TOO_FUTHER_LOCATION_MESSAGE, Toast.LENGTH_LONG).show();
             } else {
                 String placeDescription = PlacesUtils.getPlaceDescription(latLng, geocoder);
                 if (getCurrentPositionMarker() == null) {
-                    MarkersRepository.addMarker(MapService.getMap().addMarker(new MarkerOptions()
+                    MarkersRepository.addMarker(getMap().addMarker(new MarkerOptions()
                             .position(latLng)
                             .title("Twoja lokalizacja -" + placeDescription)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))));
                     Log.i("Markers add after click", "Markers a click: " + MarkersRepository.getLatLngList());
                 } else {
-                    Marker marker = MapService.getMap().addMarker(new MarkerOptions()
+                    Marker marker = getMap().addMarker(new MarkerOptions()
                             .position(latLng)
                             .title(placeDescription));
                     MarkersRepository.addMarker(marker);
-                    if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > 2){
+                    if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION){
                         RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
                         
                     }
@@ -244,7 +239,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
-        MapService.getMap().setOnMarkerClickListener(marker -> {
+        getMap().setOnMarkerClickListener(marker -> {
             Log.i(TAG, "Size: " + MarkersRepository.getLatLngList().size() + " " + MarkersRepository.getSize());
             marker.showInfoWindow();
             btnRemoveMarker.setVisibility(View.VISIBLE);
@@ -257,7 +252,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                 marker.remove();
 
-                if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > 2)
+                if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
                     RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
 
                 Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
@@ -288,7 +283,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         btnRedirectWithGoogleMaps.setVisibility(View.VISIBLE);
 
         btnRedirectWithGoogleMaps.setOnClickListener(v -> {
-            String url = getGoogleMapsRedirectUrl();
+            String url = MapService.getGoogleMapsRedirectUrl();
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.setPackage("com.google.android.apps.maps");
             startActivity(intent);
@@ -297,41 +292,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Log.i(TAG, "onResume: Route drawn");
     }
 
-    private String getGoogleMapsRedirectUrl() {
-        LatLng origin = MarkersRepository.getCurrentPositionMarker().getPosition();
-        LatLng destination = MarkersRepository.getCurrentPositionMarker().getPosition();
-        List<LatLng> waypoints = MarkerUtils.getLatLngFromMarkers(RouteRepository.getRoute().getMarkers());
-        // Budowanie URL-a z punktami pośrednimi
-        StringBuilder urlBuilder = new StringBuilder("https://www.google.com/maps/dir/?api=1");
-        urlBuilder.append("&origin=").append(origin.latitude).append(",").append(origin.longitude);
-        urlBuilder.append("&destination=").append(destination.latitude).append(",").append(destination.longitude);
-
-        if (!waypoints.isEmpty()) {
-            urlBuilder.append("&waypoints=");
-            for (int i = 0; i < waypoints.size(); i++) {
-                LatLng waypoint = waypoints.get(i);
-                if(waypoint.equals(origin))
-                    continue;
-                urlBuilder.append(waypoint.latitude).append(",").append(waypoint.longitude);
-                if (i < waypoints.size() - 1) {
-                    urlBuilder.append("|"); // Oddzielanie punktów "|" (pipe symbol)
-                }
-            }
-        }
-        return urlBuilder.toString();
-    }
-
     private void getRouteFromDirectionsAPI() {
-        String urlString = MapService.getRouteUrl();
+        String routeUrl = MapService.getRouteUrl();
 
         // Wykonanie zapytania w osobnym wątku
         new Thread(() -> {
             try {
-                URL url = new URL(urlString);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
+                URL url = new URL(routeUrl);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("GET");
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -347,8 +318,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
                     String encodedPolyline = overviewPolyline.getString("points");
 
-                    // Dekodowanie Polyline i rysowanie trasy
-                    List<LatLng> polylinePoints = decodePolyline(encodedPolyline);
+                    List<LatLng> polylinePoints = PolylineUtils.decodePolyline(encodedPolyline);
                     requireActivity().runOnUiThread(() -> drawRoute(polylinePoints));
                 }
             } catch (Exception e) {
@@ -358,65 +328,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void drawRoute(List<LatLng> polylinePoints) {
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .addAll(polylinePoints)
-                .clickable(true)
-                .color(Color.GREEN);
-
-        Polyline polyline = MapService.getMap().addPolyline(polylineOptions);
-
-        // Ustawienie widoku kamery
         if (!polylinePoints.isEmpty())
-            MapService.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(polylinePoints.get(0), 15));
-    }
+        {
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .addAll(polylinePoints)
+                    .clickable(true)
+                    .color(Color.GREEN);
 
-    // Metoda do dekodowania Polyline z Directions API
-    public List<LatLng> decodePolyline(String encoded) {
-        List<LatLng> polyline = new ArrayList<>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
 
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
+            getMap().addPolyline(polylineOptions);
 
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((lat / 1E5), (lng / 1E5));
-            polyline.add(p);
+            getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(polylinePoints.get(0), 15));
         }
-
-        return polyline;
     }
-
 
     public static void refreshMapMarkers(Geocoder geocoder) {
-        if(MapService.getMap() != null)
-            MapService.getMap().clear();
+        if(getMap() != null)
+            getMap().clear();
 
         for (LatLng latLng : MarkersRepository.getLatLngList()) {
             if (latLng.equals(getCurrentPositionMarker().getPosition()))
                 continue;
 
-            MapService.getMap().addMarker(new MarkerOptions()
+            getMap().addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(PlacesUtils.getPlaceDescription(latLng, geocoder))
                     .icon(BitmapDescriptorFactory.defaultMarker()));
         }
+    }
+
+    private static GoogleMap getMap() {
+        return MapService.getMap();
     }
 
     @NonNull
@@ -437,8 +379,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (MapService.getMap() != null) {
-                onMapReady(MapService.getMap()); // Re-initialize map if permissions are granted
+            if (getMap() != null) {
+                onMapReady(getMap());
             }
         } else {
             Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();

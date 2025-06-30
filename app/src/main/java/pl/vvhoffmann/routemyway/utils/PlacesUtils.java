@@ -89,6 +89,8 @@ public class PlacesUtils {
 
     public static double getWalkingRoute(LatLng origin, LatLng destination) throws Exception {
         String response = getPlacesAPIResponse(origin, destination);
+        if (response == null)
+            throw new IOException("Brak odpowiedzi z API");
         return parseDistance(response);
     }
 

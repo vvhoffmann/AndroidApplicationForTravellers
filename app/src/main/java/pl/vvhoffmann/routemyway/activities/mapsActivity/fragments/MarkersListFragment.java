@@ -2,23 +2,24 @@ package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import pl.vvhoffmann.routemyway.R;
+import pl.vvhoffmann.routemyway.constants.Constants;
+import pl.vvhoffmann.routemyway.constants.Messages;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
+import pl.vvhoffmann.routemyway.services.ToastService;
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 
 import com.google.android.gms.maps.model.Marker;
@@ -49,7 +50,7 @@ public class MarkersListFragment extends Fragment {
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             view1.setSelected(true);
             selectedMarker = MarkerUtils.createMarkerFromString(parent.getItemAtPosition(position).toString());
-            view1.setBackgroundColor(Color.parseColor(("#ADD8E6")));
+            view1.setBackgroundColor(Color.parseColor((Constants.SELECTED_MARKER_COLOR)));
 
             if (listView.getCheckedItemPosition() != ListView.INVALID_POSITION)
                 btnRemoveMarker.setVisibility(View.VISIBLE);
@@ -59,7 +60,6 @@ public class MarkersListFragment extends Fragment {
         btnRemoveMarker.setOnClickListener(v -> {
             String selectedItem = (String) listView.getItemAtPosition(listView.getCheckedItemPosition());
             selectedMarker = MarkerUtils.createMarkerFromString(selectedItem);
-            Log.e("TAG", "onCreateView: " + selectedMarker.getPosition());
             removeMarker(selectedMarker);
             btnRemoveMarker.setVisibility(View.INVISIBLE);
             refreshList(listView);
@@ -83,14 +83,13 @@ public class MarkersListFragment extends Fragment {
     private void removeMarker(Marker selectedMarker) {
         if (!MarkersRepository.getMarkers().isEmpty() &&  MarkersRepository.containsMarker(selectedMarker)) {
             MarkersRepository.removeMarker(selectedMarker);
-            Toast.makeText(requireContext(), "Marker usunięty", Toast.LENGTH_SHORT).show();
+            ToastService.showToast(Messages.MARKER_DELETED_MESSAGE, requireContext());
 
             if(RouteRepository.isRouteCalculated())
                 RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
 
+        } else
+            ToastService.showToast(Messages.NO_MORE_MARKERS_TO_DELETE_MESSAGE, requireContext());
 
-        } else {
-            Toast.makeText(requireContext(), "Brak markerów do usunięcia", Toast.LENGTH_SHORT).show();
-        }
     }
 }

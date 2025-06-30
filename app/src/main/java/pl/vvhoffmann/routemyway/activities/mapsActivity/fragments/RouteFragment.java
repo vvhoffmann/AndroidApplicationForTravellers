@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
+import pl.vvhoffmann.routemyway.constants.Constants;
 import pl.vvhoffmann.routemyway.models.RouteModel;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
@@ -49,14 +50,14 @@ public class RouteFragment extends Fragment {
 
         double minDistance;
 
-        if(MarkersRepository.getSize() > 2) {
+        if(MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
             routeModel = RouteOptimizationService.getOptimalRoute();
             minDistance = routeModel.getDistance();
             refreshList(listView);
 
             tvResultTitle.setVisibility(View.VISIBLE);
             tvResultDescription.setVisibility(View.VISIBLE);
-            tvResultDescription.setText(Math.round(minDistance * 100.0)/100.0 + " km");
+            tvResultDescription.setText(roundToTwoDigitsAfterComma(minDistance) + " km");
             btnShowMap.setVisibility(View.VISIBLE);
             btnEditPoints.setVisibility(View.VISIBLE);
         }
@@ -67,6 +68,10 @@ public class RouteFragment extends Fragment {
         btnEditPoints.setOnClickListener(v -> ((MapsActivity) requireActivity()).replaceFragment(MapsActivity.getMarkersListFragment()));
         
         return view;
+    }
+
+    private static double roundToTwoDigitsAfterComma(double minDistance) {
+        return Math.round(minDistance * 100.0) / 100.0;
     }
 
     private void initializeUIComponents(View view) {

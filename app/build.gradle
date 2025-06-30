@@ -32,6 +32,13 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -50,15 +57,12 @@ dependencies {
     implementation libs.rules
 
     testImplementation libs.junit
+    testImplementation libs.ext.junit
+    testImplementation libs.espresso.intents
     androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
     testImplementation libs.mockito.android
     testImplementation libs.mockito.core
-    testImplementation libs.mockito.inline
-    androidTestImplementation libs.core
-    androidTestImplementation libs.junit.v115 // JUnit extensions for Android
-    androidTestImplementation libs.rules.v150 // Test rules
-    androidTestImplementation libs.runner // Test runner
+
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.espresso.contrib // Additional Espresso matchers (e.g., RecyclerView)
     androidTestImplementation libs.espresso.intents // For intent verification
@@ -66,5 +70,5 @@ dependencies {
     debugImplementation libs.fragment.testing // Fragment testing in isolation
     testImplementation libs.hamcrest.library
     testImplementation libs.truth
-    testImplementation libs.robolectric
+
 }

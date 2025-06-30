@@ -1,19 +1,26 @@
 <resources>
     <string name="app_name">RouteMyWay</string>
-    <string name="description">Aplikacja jest wynikiem mojej pracy inżynierskiej, która bada algorytmy rozwiązujące problem komiwojażera. Celem mojej aplikacji jest usprawnienie planowania zwiedzania miasto pieszo. Pomaga w wyznaczeniu najlepszej możliwej trasy na podstawie zadanych przez ciebie punktów.</string>
+    <string name="desc">Aplikacja wspomagająca wyznaczenie pseudooptymalnej trasy na mapie wśród zadanych punktów</string>
     <string name="title">RouteMyWay</string>
     <string name="btnTxt">START</string>
     <string name="author">Autorka :  Wiktoria Hoffmann</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="list">Lista miejsc</string>
     <string name="map">Mapa</string>
-    <string name="route">Wyznaczanie drogi</string>
+    <string name="route">Wyznacz trasę</string>
+    <string name="info">"Info"</string>
     <string name="calculate">Oblicz trasę</string>
     <string name="resultTitle">Długość trasy:</string>
     <string name="current_location">Obecna lokalizacja:</string>
     <string name="twoje_miejsca">Twoje miejsca:</string>
     <string name="title_list_fragment">Twoja optymalna trasa:</string>
-    <string name="desc">Aplikacja wspomagająca wyznaczenie pseudooptymalnej trasy na mapie wśród zadanych punktów</string>
+    <string name="title_info">Informacje o aplikacji:</string>
+    <string name="google_info">Nasza aplikacja korzysta z usług Google Maps API/SDK, które umożliwiają wyświetlanie map oraz korzystanie z funkcji lokalizacyjnych.
+         Korzystając z tych usług, aplikacja przesyła dane, takie jak adres IP czy współrzędne lokalizacji, do Google, które przetwarza je zgodnie ze swoją Polityką prywatności.
+        \nKorzystanie z funkcji mapowych w aplikacji podlega również Warunkom korzystania z Google Maps.
+        \n\nZachęcamy do zapoznania się z tymi dokumentami, aby zrozumieć, w jaki sposób Google przetwarza dane oraz jakie prawa i obowiązki wynikają z korzystania z usług Google Maps.</string>
+    <string name="info_content">Aplikacja RouteMyWay jest wynikiem pracy inżynierskiej, która badała algorytmy rozwiązujące problem komiwojażera.
+        \n\nCelem aplikacji było usprawnienie planowania zwiedzania miasta pieszo, poprzez wyznaczenie najlepszej możliwej trasy na podstawie zadanych przez użytkownika punktów.</string>
     <string name="usun_marker">Usuń Marker</string>
     <string name="pokaz_tras">Pokaż trasę</string>
     <string name="pokaz_trase_na_mapie">Pokaż trasę na mapie</string>

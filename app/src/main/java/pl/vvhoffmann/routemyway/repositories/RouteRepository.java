@@ -17,6 +17,7 @@ public class RouteRepository {
         }
         return route;
     }
+
     public static boolean isRouteCalculated() {
         return isRouteCalculated;
     }
