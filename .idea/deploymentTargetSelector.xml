@@ -8,13 +8,16 @@
       <SelectionState runConfigName="testRedirectToGoogleMaps()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RouteMyWayActivityEspressoTest">
+      <SelectionState runConfigName="MapsActivityInstrumentedTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RouteMyWayActivityInstrumentedTest">
+      <SelectionState runConfigName="testActivityStartsWithMapFragment()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RouteMyWayActivity">
+      <SelectionState runConfigName="testSwitchNavigationFragments()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="MapsActivityUITest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

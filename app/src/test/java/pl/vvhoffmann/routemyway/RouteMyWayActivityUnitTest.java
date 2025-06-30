@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Test;
 
 public class RouteMyWayActivityUnitTest {
+
     @After
     public void tearDown() {
         RouteMyWayActivity.locationEnabled = true;
@@ -24,4 +25,5 @@ public class RouteMyWayActivityUnitTest {
         RouteMyWayActivity.locationEnabled = true;
         assertTrue("Flaga locationEnabled powinna być true po ponownym ustawieniu", RouteMyWayActivity.locationEnabled);
     }
+
 }
