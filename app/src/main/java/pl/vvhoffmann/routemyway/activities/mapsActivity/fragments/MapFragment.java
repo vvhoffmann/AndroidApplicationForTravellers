@@ -57,6 +57,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -128,7 +129,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
         if (RouteMyWayActivity.locationEnabled) {
-            // Sprawdzenie i żądanie uprawnień lokalizacji
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -142,7 +142,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 if (location != null && getMap() != null) {
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    Marker currentPositionMarker = getMap().addMarker(new MarkerOptions()
+                    Marker currentPositionMarker = addMarkerToMap(new MarkerOptions()
                             .position(currentLatLng)
                             .title("Twoja lokalizacja - " + PlacesUtils.getPlaceDescription(currentLatLng, geocoder))
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
@@ -152,19 +152,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
                 } else {
-                    Toast.makeText(requireContext(), "Brak lokalizacji", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), Messages.NOT_UPLOADED_LOCATION_INFO_MESSAGE, Toast.LENGTH_SHORT).show();
                 }
 
-//                final FindAutocompletePredictionsRequest autocompletePlacesRequest =
-//                        FindAutocompletePredictionsRequest.builder()
-//                                .setLocationRestriction(getRectangularBounds())
-//                                .setOrigin(getCurrentPositionMarker().getPosition())
-//                                .build();
-
                 if (autocompleteFragment != null) {
-                    autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
-                    autocompleteFragment.setHint(Messages.AUTOCOMPLETE_HINT_MESSAGE);
-                    autocompleteFragment.setLocationRestriction(getRectangularBounds());
+                    autoCompleteSetup();
                     autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
                         @Override
                         public void onPlaceSelected(@NonNull Place place) {
@@ -175,7 +167,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                     .position(place.getLatLng())
                                     .title(PlacesUtils.getPlaceDescription(place.getLatLng(), geocoder))
                                     .icon(BitmapDescriptorFactory.defaultMarker());
-                            Marker marker = getMap().addMarker(markerOptions);
+                            Marker marker = addMarkerToMap(markerOptions);
                             assert marker != null;
                             MarkersRepository.addMarker(marker);
                             if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
@@ -218,21 +210,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             } else {
                 String placeDescription = PlacesUtils.getPlaceDescription(latLng, geocoder);
                 if (getCurrentPositionMarker() == null) {
-                    MarkersRepository.addMarker(getMap().addMarker(new MarkerOptions()
+                    MarkersRepository.addMarker(addMarkerToMap(new MarkerOptions()
                             .position(latLng)
                             .title("Twoja lokalizacja -" + placeDescription)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))));
-                    Log.i("Markers add after click", "Markers a click: " + MarkersRepository.getLatLngList());
                 } else {
-                    Marker marker = getMap().addMarker(new MarkerOptions()
+                    Marker marker = addMarkerToMap(new MarkerOptions()
                             .position(latLng)
                             .title(placeDescription));
-                    MarkersRepository.addMarker(marker);
-                    if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION){
-                        RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
-                        
-                    }
 
+                    MarkersRepository.addMarker(marker);
+
+                    if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
+                        RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
                 }
             }
             btnRemoveMarker.setVisibility(View.INVISIBLE);
@@ -261,6 +251,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             return true;
         });
+    }
+
+    @Nullable
+    private static Marker addMarkerToMap(MarkerOptions markerOptions) {
+        return getMap().addMarker(markerOptions);
+    }
+
+    private void autoCompleteSetup() {
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
+        autocompleteFragment.setHint(Messages.AUTOCOMPLETE_HINT_MESSAGE);
+        autocompleteFragment.setLocationRestriction(getRectangularBounds());
     }
 
 
@@ -350,7 +351,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             if (latLng.equals(getCurrentPositionMarker().getPosition()))
                 continue;
 
-            getMap().addMarker(new MarkerOptions()
+            addMarkerToMap(new MarkerOptions()
                     .position(latLng)
                     .title(PlacesUtils.getPlaceDescription(latLng, geocoder))
                     .icon(BitmapDescriptorFactory.defaultMarker()));

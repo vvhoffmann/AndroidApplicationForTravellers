@@ -50,6 +50,7 @@ public class MapsActivity extends FragmentActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
+
         // Sprawdzenie uprawnień lokalizacji
         checkLocationPermission();
     }
