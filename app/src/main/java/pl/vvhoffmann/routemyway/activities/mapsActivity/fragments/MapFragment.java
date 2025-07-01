@@ -60,12 +60,16 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -74,7 +78,6 @@ import java.util.Objects;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
     private AutocompleteSupportFragment autocompleteFragment;
-
     private Button btnRemoveMarker;
     private Button btnRedirectWithGoogleMaps;
 
@@ -126,7 +129,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         MapService.setMap(googleMap);
         refreshMapMarkers(geocoder);
         getMap().getUiSettings().setZoomControlsEnabled(true);
-
 
         if (RouteMyWayActivity.locationEnabled) {
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -299,33 +301,50 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Wykonanie zapytania w osobnym wątku
         new Thread(() -> {
             try {
-                URL url = new URL(routeUrl);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("GET");
+                String httpResponse = getHttpResponse(routeUrl);
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-
-                // Parsowanie odpowiedzi JSON
-                JSONObject jsonResponse = new JSONObject(response.toString());
-                JSONArray routes = jsonResponse.getJSONArray("routes");
-                if (routes.length() > 0) {
-                    JSONObject route = routes.getJSONObject(0);
-                    JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
-                    String encodedPolyline = overviewPolyline.getString("points");
-
-                    List<LatLng> polylinePoints = PolylineUtils.decodePolyline(encodedPolyline);
+                List<LatLng> polylinePoints = getPolylinePoints(httpResponse);
+                if(!polylinePoints.isEmpty())
                     requireActivity().runOnUiThread(() -> drawRoute(polylinePoints));
-                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private static String getHttpResponse(String routeUrl) throws IOException {
+        URL url = new URL(routeUrl);
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+
+        return getParsedResponse(httpURLConnection.getInputStream());
+    }
+
+    private static String getParsedResponse(InputStream input) throws IOException{
+        StringBuilder response = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+
+        String line;
+        while ((line = reader.readLine()) != null)
+            response.append(line);
+
+        reader.close();
+        return response.toString();
+    }
+
+    private static List<LatLng> getPolylinePoints(String response) throws JSONException {
+
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONArray routes = jsonResponse.getJSONArray("routes");
+
+        if(routes.length() > 0) {
+            JSONObject route = routes.getJSONObject(0);
+            JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
+            String encodedPolyline = overviewPolyline.getString("points");
+
+            return PolylineUtils.decodePolyline(encodedPolyline);
+        }
+        return new ArrayList<>();
     }
 
     private void drawRoute(List<LatLng> polylinePoints) {
@@ -335,7 +354,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     .addAll(polylinePoints)
                     .clickable(true)
                     .color(Color.GREEN);
-
 
             getMap().addPolyline(polylineOptions);
 

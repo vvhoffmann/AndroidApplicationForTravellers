@@ -17,7 +17,6 @@ import pl.vvhoffmann.routemyway.utils.MarkerUtils;
 
 public class MapService {
     private static GoogleMap map;
-    private static LinkedList<MarkerOptions> markerOptionsList;
 
     public static String getGoogleMapsRedirectUrl() {
         LatLng origin = MarkersRepository.getCurrentPositionMarker().getPosition();
