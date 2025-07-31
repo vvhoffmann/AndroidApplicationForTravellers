@@ -58,10 +58,14 @@ Aplikacja rozwiązuje problem braku funkcji optymalizacji trasy w mapach Google 
 
 ## 🧭 Przykładowy scenariusz użycia
 
-1. Użytkownik otwiera aplikację i widzi mapę swojego miasta.
-2. Wybiera punkty do odwiedzenia — klikając na mapie lub wyszukując konkretne miejsca.
-3. Aplikacja oblicza quasi-optymalną trasę zwiedzania.
-4. Użytkownik może przejrzeć trasę wizualnie lub kliknąć „Nawiguj”, by otworzyć ją w Google Maps.
+1. Użytkownik otwiera aplikację i widzi ekran startowy, który umożliwia mu udostępnienie lokalizacji i przejście do głównego Activity aplikacji po kliknięciu przycisku.
+2. Użytkownik widzi mapę wraz ze swoim położeniem (jeśli zezwolił na udostępnienie)
+3. Wybiera punkty do odwiedzenia — klikając na mapie lub wyszukując konkretne miejsca.
+4. Użytkownik ma możliwość usunięcia punktów, które są zbędne lub zostały zaznaczone przez przypadek.
+5. Użytkownik ma możliwość poglądu punktów wraz z adresami na liście.
+6. Po przejściu do zakładki oblicz trasę algorytm oblicza quasi-optymalną trasę zwiedzania.
+7. Na mapie zostaje wyświetlona wyznaczona trasa.
+8. Użytkownik może przejrzeć trasę wizualnie lub kliknąć „Nawiguj”, by otworzyć ją w Google Maps w dalszej celu nawigacji.
 
 ---
 
