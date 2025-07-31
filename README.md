@@ -4,13 +4,14 @@ Aplikacja mobilna na system Android, która umożliwia szybkie i wygodne planowa
 
 ---
 <img width="302" height="776" alt="image" src="https://github.com/user-attachments/assets/1d92c54e-aa6c-4d59-a589-3a773feae691" />
+<img width="302" height="776" alt="image" src="https://github.com/user-attachments/assets/29b48cfe-b169-4854-be2f-bec4214d86db" />
 <img width="302" height="776" alt="image" src="https://github.com/user-attachments/assets/e69cbb8e-7bdc-4c15-ae94-aaa4249df7a0" />
 <img width="302" height="776" alt="image" src="https://github.com/user-attachments/assets/c06815dd-2c7b-4fe2-aeb5-8dd8730364c7" />
 <img width="602" height="776" alt="image" src="https://github.com/user-attachments/assets/7fc119b6-8788-48db-8495-3f300e26f69c" />
 
 <img width="302" height="776" alt="image" src="https://github.com/user-attachments/assets/fcb05966-f056-4ab1-ac4d-4c18e7688fa7" />
 
-<img width="302" height="776" alt="image" src="https://github.com/user-attachments/assets/29b48cfe-b169-4854-be2f-bec4214d86db" />
+
 <img width="302" height="776" alt="image" src="https://github.com/user-attachments/assets/af09dc5b-15e8-4f7e-a14f-28373bc4e9c1" />
 ---
 
