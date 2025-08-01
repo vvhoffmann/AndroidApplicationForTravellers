@@ -17,7 +17,7 @@ Aplikacja mobilna na system Android, która umożliwia szybkie i wygodne planowa
 
 ## 📱 Opis
 
-**CityTour Planner** pozwala użytkownikowi wyznaczyć trasę zwiedzania w korzystając z algorytmu Quasi Optymalnego, dzięki któremu można wyznaczyć pseudooptymalną trasę nawet przy większej ilości punktów w szybkim czasie.
+**Route My Way** pozwala użytkownikowi wyznaczyć trasę zwiedzania w korzystając z algorytmu Quasi Optymalnego, dzięki któremu można wyznaczyć pseudooptymalną trasę nawet przy większej ilości punktów w szybkim czasie.
 
 Punkty trasy można wskazać:
 - klikając bezpośrednio na mapie,
