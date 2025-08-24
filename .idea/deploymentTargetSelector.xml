@@ -8,19 +8,7 @@
       <SelectionState runConfigName="testRedirectToGoogleMaps()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="decodePolyline_worksForValidString()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="fragmentLaunchesAndUIElementsArePresent()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="drawRoute_doesNotCrash()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="fragment_onResume_refreshesMarkersOrDrawsRoute()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="getRouteFromDirectionsAPI_runsWithoutCrash()">
+      <SelectionState runConfigName="RouteMyWayActivity">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

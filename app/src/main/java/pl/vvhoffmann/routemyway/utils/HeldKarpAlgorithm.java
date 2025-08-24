@@ -14,28 +14,32 @@ public class HeldKarpAlgorithm {
     public static LinkedList<LatLng> getTSPSolution() {
         LinkedList<LatLng> points = MarkersRepository.getLatLngList();
         double [][] dist = MarkersRepository.getDistanceArray();
+        return calculateHeldKarpSolution(points,dist);
+    }
+
+    private static LinkedList<LatLng> calculateHeldKarpSolution(LinkedList<LatLng> points, double[][] dist) {
         int n = points.size();
 
         int N = 1 << n; // 2^n
         double[][] dp = new double[N][n];
-        int[][] parent = new int[N][n]; // Do rekonstrukcji ścieżki
+        int[][] parent = new int[N][n];
 
         for (double[] row : dp) Arrays.fill(row, INF);
-        dp[1][0] = 0; // Start w punkcie 0
+        dp[1][0] = 0;
 
         // Wypełnianie tablicy DP
         for (int subset = 1; subset < N; subset++) {
-            if ((subset & 1) == 0) continue; // Musi zawierać punkt startowy
+            if ((subset & 1) == 0) continue;
 
-            for (int j = 1; j < n; j++) { // Ostatnie miasto
-                if ((subset & (1 << j)) == 0) continue; // j nie w zbiorze
+            for (int j = 1; j < n; j++) {
+                if ((subset & (1 << j)) == 0) continue;
 
-                int prevSubset = subset ^ (1 << j); // Usunięcie j z podzbioru
+                int prevSubset = subset ^ (1 << j);
                 double minCost = INF;
                 int bestK = -1;
 
                 for (int k = 0; k < n; k++) {
-                    if ((prevSubset & (1 << k)) != 0) { // k jest w zbiorze
+                    if ((prevSubset & (1 << k)) != 0) {
                         double newCost = dp[prevSubset][k] + dist[k][j];
                         if (newCost < minCost) {
                             minCost = newCost;
@@ -44,7 +48,7 @@ public class HeldKarpAlgorithm {
                     }
                 }
                 dp[subset][j] = minCost;
-                parent[subset][j] = bestK; // Zapamiętujemy ścieżkę
+                parent[subset][j] = bestK;
             }
         }
 
@@ -64,7 +68,7 @@ public class HeldKarpAlgorithm {
         distance = minTourCost;
         // Rekonstrukcja ścieżki
         LinkedList<LatLng> path = reconstructPath(parent, fullSet, lastCity, points);
-        path.add(points.get(0)); // Powrót do startu
+        path.add(points.get(0));
         return path;
     }
 
@@ -76,7 +80,7 @@ public class HeldKarpAlgorithm {
             last = parent[subset][last];
             subset = prevSubset;
         }
-        path.add(points.get(0)); // Dodaj punkt startowy
+        path.add(points.get(0));
         Collections.reverse(path);
         return path;
     }

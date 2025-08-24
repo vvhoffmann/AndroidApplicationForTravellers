@@ -59,18 +59,19 @@ public class PlacesUtils {
         int n = points.size();
         double[][] dist = new double[n][n];
 
-        // ExecutorService do obsługi wielu zapytań jednocześnie
         ExecutorService executor = Executors.newFixedThreadPool(10);
         ArrayList<Future<Double>> results = new ArrayList<>();
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 final int row = i, col = j;
-                results.add(executor.submit(() -> getWalkingRoute(points.get(row), points.get(col))));
+                if(row == col)
+                    results.add(executor.submit(() -> 0.0));
+                else
+                    results.add(executor.submit(() -> getWalkingRoute(points.get(row), points.get(col))));
             }
         }
 
-        // Odbieramy wyniki i zapisujemy w macierzy
         int index = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
