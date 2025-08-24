@@ -2,8 +2,6 @@ package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import static android.content.ContentValues.TAG;
 
-import static pl.vvhoffmann.routemyway.repositories.MarkersRepository.getCurrentPositionMarker;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -146,8 +144,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             .title("Twoja lokalizacja - " + PlacesUtils.getPlaceDescription(currentLatLng, geocoder))
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-                    if (MarkersRepository.getCurrentPositionMarker() == null)
-                        MarkersRepository.setCurrentPositionMarker(currentPositionMarker);
+                    if (getMarkersRepository().getCurrentPositionMarker() == null)
+                        getMarkersRepository().setCurrentPositionMarker(currentPositionMarker);
 
                     getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
                 } else {
@@ -168,8 +166,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                     .icon(BitmapDescriptorFactory.defaultMarker());
                             Marker marker = addMarkerToMap(markerOptions);
                             assert marker != null;
-                            MarkersRepository.addMarker(marker);
-                            if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
+                            getMarkersRepository().addMarker(marker);
+                            if(RouteRepository.isRouteCalculated() && getMarkersRepository().getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
                                 RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
                                 onResume();
                             }
@@ -203,13 +201,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Obsługa kliknięcia na mapę
         getMap().setOnMapClickListener(latLng -> {
-            if (Math.abs(latLng.latitude - getCurrentPositionMarker().getPosition().latitude) > 0.2 ||
-                    Math.abs(latLng.longitude - getCurrentPositionMarker().getPosition().longitude) > 0.2) {
+            if (Math.abs(latLng.latitude - getMarkersRepository().getCurrentPositionMarker().getPosition().latitude) > 0.2 ||
+                    Math.abs(latLng.longitude - getMarkersRepository().getCurrentPositionMarker().getPosition().longitude) > 0.2) {
                 Toast.makeText(getContext(), Messages.TOO_FUTHER_LOCATION_MESSAGE, Toast.LENGTH_LONG).show();
             } else {
                 String placeDescription = PlacesUtils.getPlaceDescription(latLng, geocoder);
-                if (getCurrentPositionMarker() == null) {
-                    MarkersRepository.addMarker(addMarkerToMap(new MarkerOptions()
+                if (getMarkersRepository().getCurrentPositionMarker() == null) {
+                    getMarkersRepository().addMarker(addMarkerToMap(new MarkerOptions()
                             .position(latLng)
                             .title("Twoja lokalizacja -" + placeDescription)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))));
@@ -218,9 +216,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             .position(latLng)
                             .title(placeDescription));
 
-                    MarkersRepository.addMarker(marker);
+                    getMarkersRepository().addMarker(marker);
 
-                    if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
+                    if(RouteRepository.isRouteCalculated() && getMarkersRepository().getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
                         RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
                 }
             }
@@ -229,22 +227,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
         getMap().setOnMarkerClickListener(marker -> {
-            Log.i(TAG, "Size: " + MarkersRepository.getLatLngList().size() + " " + MarkersRepository.getSize());
+            Log.i(TAG, "Size: " + getMarkersRepository().getLatLngList().size() + " " + getMarkersRepository().getSize());
             marker.showInfoWindow();
             btnRemoveMarker.setVisibility(View.VISIBLE);
             Log.i("Marker clicked", "Marker clicked: " + marker.getTitle() + " " + marker.getPosition());
 
             btnRemoveMarker.setOnClickListener(v -> {
                 Log.i("Marker to remove", "Marker to remove: " + marker.getTitle() + "  "+ marker.getPosition());
-                Marker selectedMarker = MarkersRepository.getMarkerByLatLng(marker.getPosition());
-                MarkersRepository.removeMarker(selectedMarker);
+                Marker selectedMarker = getMarkersRepository().getMarkerByLatLng(marker.getPosition());
+                getMarkersRepository().removeMarker(selectedMarker);
 
                 marker.remove();
 
-                if(RouteRepository.isRouteCalculated() && MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
+                if(RouteRepository.isRouteCalculated() && getMarkersRepository().getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
                     RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
 
-                Log.i("Markers after remove", "Markers: " + MarkersRepository.getDescription());
+                Log.i("Markers after remove", "Markers: " + getMarkersRepository().getDescription());
                 btnRemoveMarker.setVisibility(View.INVISIBLE);
             });
 
@@ -362,8 +360,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if(getMap() != null)
             getMap().clear();
 
-        for (LatLng latLng : MarkersRepository.getLatLngList()) {
-            if (latLng.equals(getCurrentPositionMarker().getPosition()))
+        for (LatLng latLng : getMarkersRepository().getLatLngList()) {
+            if (latLng.equals(getMarkersRepository().getCurrentPositionMarker().getPosition()))
                 continue;
 
             addMarkerToMap(new MarkerOptions()
@@ -377,10 +375,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return MapService.getMap();
     }
 
+    private static MarkersRepository getMarkersRepository() {
+        return MarkersRepository.getInstance();
+    }
+
     @NonNull
     private static RectangularBounds getRectangularBounds() {
-        LatLng southwestRestriction = new LatLng(getCurrentPositionMarker().getPosition().latitude - 0.2, getCurrentPositionMarker().getPosition().longitude - 0.2); // Lewy dolny róg
-        LatLng northeastRestriction = new LatLng(getCurrentPositionMarker().getPosition().latitude + 0.2, getCurrentPositionMarker().getPosition().longitude + 0.2); // Prawy górny róg
+        Marker currentPositionMarker = getMarkersRepository().getCurrentPositionMarker();
+        LatLng southwestRestriction = new LatLng(currentPositionMarker.getPosition().latitude - 0.2, currentPositionMarker.getPosition().longitude - 0.2); // Lewy dolny róg
+        LatLng northeastRestriction = new LatLng(currentPositionMarker.getPosition().latitude + 0.2, currentPositionMarker.getPosition().longitude + 0.2); // Prawy górny róg
 
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(southwestRestriction)

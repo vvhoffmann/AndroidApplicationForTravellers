@@ -68,8 +68,8 @@ public class MarkersListFragment extends Fragment {
     }
 
     private void refreshList(ListView listView) {
-        items = new String[MarkersRepository.getSize() ];
-        System.arraycopy(MarkersRepository.getMarkers()
+        items = new String[markersRepository().getSize() ];
+        System.arraycopy(markersRepository().getMarkers()
                 .stream()
                 .map(Marker::getTitle)
                 .toArray(String[]::new), 0, items, 0, items.length);
@@ -81,8 +81,8 @@ public class MarkersListFragment extends Fragment {
 
     // Funkcja do usuwania ostatniego markera
     private void removeMarker(Marker selectedMarker) {
-        if (!MarkersRepository.getMarkers().isEmpty() &&  MarkersRepository.containsMarker(selectedMarker)) {
-            MarkersRepository.removeMarker(selectedMarker);
+        if (!markersRepository().getMarkers().isEmpty() &&  markersRepository().containsMarker(selectedMarker)) {
+            markersRepository().removeMarker(selectedMarker);
             ToastService.showToast(Messages.MARKER_DELETED_MESSAGE, requireContext());
 
             if(RouteRepository.isRouteCalculated())
@@ -91,5 +91,9 @@ public class MarkersListFragment extends Fragment {
         } else
             ToastService.showToast(Messages.NO_MORE_MARKERS_TO_DELETE_MESSAGE, requireContext());
 
+    }
+
+    private MarkersRepository markersRepository() {
+        return MarkersRepository.getInstance();
     }
 }

@@ -19,7 +19,7 @@ public class MapService {
     private static GoogleMap map;
 
     public static String getGoogleMapsRedirectUrl() {
-        LatLng origin = MarkersRepository.getCurrentPositionMarker().getPosition();
+        LatLng origin = MarkersRepository.getInstance().getCurrentPositionMarker().getPosition();
         List<LatLng> waypoints = MarkerUtils.getLatLngFromMarkers(RouteRepository.getRoute().getMarkers());
         return buildGoogleMapsRedirectUrl(origin, waypoints);
     }

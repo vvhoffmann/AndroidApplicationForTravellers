@@ -20,7 +20,7 @@ public class MarkerUtils {
     public static Marker createMarkerFromString(String text) {
 
         if(!text.contains("]"))
-            for(Marker marker : MarkersRepository.getMarkers())
+            for(Marker marker : MarkersRepository.getInstance().getMarkers())
                 if(text.contains(marker.getTitle()))
                     return marker;
 
@@ -32,7 +32,7 @@ public class MarkerUtils {
         double lng = Double.parseDouble(coordinates[1].trim());
         LatLng position = new LatLng(lat, lng);
 
-        for (LatLng latLng : MarkersRepository.getLatLngList())
+        for (LatLng latLng : MarkersRepository.getInstance().getLatLngList())
             if (latLng.equals(position))
                 return getMarkerByLatLng(position);
 
@@ -40,7 +40,7 @@ public class MarkerUtils {
     }
 
     public static Marker getMarkerByLatLng(LatLng latLng) {
-        return MarkersRepository.getMarkerByLatLng(latLng);
+        return MarkersRepository.getInstance().getMarkerByLatLng(latLng);
     }
 
     public static LatLng getLatLngFromMarker(Marker marker) {

@@ -12,8 +12,8 @@ public class HeldKarpAlgorithm {
     private static double distance = 0.0;
 
     public static LinkedList<LatLng> getTSPSolution() {
-        LinkedList<LatLng> points = MarkersRepository.getLatLngList();
-        double [][] dist = MarkersRepository.getDistanceArray();
+        LinkedList<LatLng> points = MarkersRepository.getInstance().getLatLngList();
+        double [][] dist = MarkersRepository.getInstance().getDistanceArray();
         return calculateHeldKarpSolution(points,dist);
     }
 

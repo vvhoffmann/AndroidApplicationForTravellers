@@ -50,7 +50,7 @@ public class RouteFragment extends Fragment {
 
         double minDistance;
 
-        if(MarkersRepository.getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
+        if(MarkersRepository.getInstance().getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
             routeModel = RouteOptimizationService.getOptimalRoute();
             minDistance = routeModel.getDistance();
             refreshList(listView);
