@@ -2,6 +2,8 @@ package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import static android.content.ContentValues.TAG;
 
+import static pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity.getMarkersRepository;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -27,7 +29,6 @@ import pl.vvhoffmann.routemyway.RouteMyWayActivity;
 import pl.vvhoffmann.routemyway.config.AppConfig;
 import pl.vvhoffmann.routemyway.constants.Constants;
 import pl.vvhoffmann.routemyway.constants.Messages;
-import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.MapService;
 import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
@@ -373,10 +374,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private static GoogleMap getMap() {
         return MapService.getMap();
-    }
-
-    private static MarkersRepository getMarkersRepository() {
-        return MarkersRepository.getInstance();
     }
 
     @NonNull

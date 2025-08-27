@@ -9,11 +9,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
-import pl.vvhoffmann.routemyway.utils.PlacesUtils;
+import pl.vvhoffmann.routemyway.utils.PointUtils;
 
-public class MarkersRepository implements IMarkersRepository {
+public class MarkersRepositoryTestImpl implements IMarkersRepository{
 
-    private static IMarkersRepository MARKERS_REPOSITORY = new MarkersRepository();
+    private static MarkersRepositoryTestImpl MARKERS_REPOSITORY;
     private Marker currentPositionMarker = null;
     private LinkedList<Marker> markers = new LinkedList<>();
     private LinkedHashMap<LatLng,Marker> markersMap = new LinkedHashMap<>();
@@ -21,14 +21,20 @@ public class MarkersRepository implements IMarkersRepository {
     private int size = 1;
     private boolean areDistancesCalculated = false;
 
-    private MarkersRepository() {}
+    public MarkersRepositoryTestImpl(LinkedList<Marker> markersToAdd) {
+        setCurrentPositionMarker(markersToAdd.get(0));
+        for (Marker marker : markersToAdd) {
+            if(marker == currentPositionMarker) continue;
+            markers.add(marker);
+            markersMap.put(getLatLngFromMarker(marker),marker);
+            size++;
+        }
+        MARKERS_REPOSITORY = this;
 
-    public static IMarkersRepository getInstance() {
-        return MARKERS_REPOSITORY;
     }
 
-    public static void setInstanceForTests(IMarkersRepository instance) {
-        MARKERS_REPOSITORY = instance;
+    public static MarkersRepositoryTestImpl getInstance() {
+        return MARKERS_REPOSITORY;
     }
 
     @Override
@@ -78,8 +84,27 @@ public class MarkersRepository implements IMarkersRepository {
 
 
     private void setDistances() {
-        distances = PlacesUtils.getDistanceArray();
+        distances = generateDistanceArray();
         areDistancesCalculated = true;
+    }
+
+    private double[][] generateDistanceArray() {
+        double[][] distanceArray = new double[size][size];
+        for (Marker markerA : markers) {
+            for (Marker markerB : markers) {
+                int indexA = markers.indexOf(markerA);
+                int indexB = markers.indexOf(markerB);
+                if (markerA == markerB)
+                    distanceArray[indexA][indexB] = 0.0;
+                else
+                    distanceArray[indexA][indexB] = getDistanceBetweenMarkers(markerA, markerB);
+            }
+        }
+        return distanceArray;
+    }
+
+    private double getDistanceBetweenMarkers(Marker markerA, Marker markerB) {
+        return PointUtils.distance(markerA.getPosition(), markerB.getPosition());
     }
 
     @Override

@@ -16,11 +16,11 @@ import androidx.fragment.app.Fragment;
 import pl.vvhoffmann.routemyway.R;
 import pl.vvhoffmann.routemyway.constants.Constants;
 import pl.vvhoffmann.routemyway.constants.Messages;
-import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
 import pl.vvhoffmann.routemyway.services.ToastService;
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
+import static pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity.getMarkersRepository;
 
 import com.google.android.gms.maps.model.Marker;
 
@@ -68,8 +68,8 @@ public class MarkersListFragment extends Fragment {
     }
 
     private void refreshList(ListView listView) {
-        items = new String[markersRepository().getSize() ];
-        System.arraycopy(markersRepository().getMarkers()
+        items = new String[getMarkersRepository().getSize() ];
+        System.arraycopy(getMarkersRepository().getMarkers()
                 .stream()
                 .map(Marker::getTitle)
                 .toArray(String[]::new), 0, items, 0, items.length);
@@ -81,8 +81,8 @@ public class MarkersListFragment extends Fragment {
 
     // Funkcja do usuwania ostatniego markera
     private void removeMarker(Marker selectedMarker) {
-        if (!markersRepository().getMarkers().isEmpty() &&  markersRepository().containsMarker(selectedMarker)) {
-            markersRepository().removeMarker(selectedMarker);
+        if (!getMarkersRepository().getMarkers().isEmpty() &&  getMarkersRepository().containsMarker(selectedMarker)) {
+            getMarkersRepository().removeMarker(selectedMarker);
             ToastService.showToast(Messages.MARKER_DELETED_MESSAGE, requireContext());
 
             if(RouteRepository.isRouteCalculated())
@@ -91,9 +91,5 @@ public class MarkersListFragment extends Fragment {
         } else
             ToastService.showToast(Messages.NO_MORE_MARKERS_TO_DELETE_MESSAGE, requireContext());
 
-    }
-
-    private MarkersRepository markersRepository() {
-        return MarkersRepository.getInstance();
     }
 }
