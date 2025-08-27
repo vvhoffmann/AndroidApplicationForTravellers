@@ -6,18 +6,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import pl.vvhoffmann.routemyway.config.AppConfig;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 
 public class PlacesUtils {
@@ -59,19 +48,8 @@ public class PlacesUtils {
         int n = points.size();
         double[][] dist = new double[n][n];
 
-        ExecutorService executor = Executors.newFixedThreadPool(10);
-        ArrayList<Future<Double>> results = new ArrayList<>();
-        HttpClient httpClient = new WalkingRouteHttpClient();
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                final int row = i, col = j;
-                if(row == col)
-                    results.add(executor.submit(() -> 0.0));
-                else
-                    results.add(executor.submit(() -> httpClient.getWalkingRoute(points.get(row), points.get(col))));
-            }
-        }
+        RoutesHttpClient routesHttpClient = new WalkingRouteHttpClient();
+        ArrayList<Future<Double>> results = getRoutesLengths(n, routesHttpClient, points);
 
         int index = 0;
         for (int i = 0; i < n; i++) {
@@ -83,8 +61,22 @@ public class PlacesUtils {
                 }
             }
         }
-
-        executor.shutdown();
         return dist;
+    }
+
+    private static ArrayList<Future<Double>> getRoutesLengths(int n, RoutesHttpClient routesHttpClient, LinkedList<LatLng> points) {
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ArrayList<Future<Double>> results = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                final int row = i, col = j;
+                if(row == col)
+                    results.add(executor.submit(() -> 0.0));
+                else
+                    results.add(executor.submit(() -> routesHttpClient.getWalkingRoute(points.get(row), points.get(col))));
+            }
+        }
+        executor.shutdown();
+        return results;
     }
 }

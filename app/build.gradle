@@ -62,6 +62,7 @@ dependencies {
     testImplementation libs.espresso.intents
     testImplementation libs.mockito.core
     testImplementation 'net.bytebuddy:byte-buddy:1.14.10'
+    testImplementation libs.junit.jupiter
 
     androidTestImplementation libs.core
     androidTestImplementation libs.runner.v150
@@ -74,5 +75,6 @@ dependencies {
     androidTestImplementation libs.hamcrest
     androidTestImplementation 'org.mockito:mockito-android:5.2.0'
     androidTestImplementation libs.fragment.testing.v162
+    
     
 }

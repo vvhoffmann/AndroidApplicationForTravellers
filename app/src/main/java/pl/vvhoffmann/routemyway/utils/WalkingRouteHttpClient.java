@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -16,7 +15,7 @@ import java.net.URL;
 
 import pl.vvhoffmann.routemyway.config.AppConfig;
 
-public class WalkingRouteHttpClient implements HttpClient {
+public class WalkingRouteHttpClient implements RoutesHttpClient {
 
     @Override
     public double getWalkingRoute(LatLng origin, LatLng destination) throws Exception {
