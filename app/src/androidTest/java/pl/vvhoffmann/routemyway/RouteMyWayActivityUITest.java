@@ -22,24 +22,22 @@ public class RouteMyWayActivityUITest {
             new ActivityScenarioRule<>(RouteMyWayActivity.class);
 
     @Test
-    public void testSwitchLocationToggleUpdatesStaticVariable() {
+    public void testRouteMyWayActivityUI() {
+        onView(withId(R.id.tvTitle)).check(matches(isDisplayed()));
+        onView(withId(R.id.tvDesc)).check(matches(isDisplayed()));
+        onView(withId(R.id.btnToApp)).check(matches(isDisplayed()));
+        onView(withId(R.id.switchLocation)).check(matches(isDisplayed()));
+
         RouteMyWayActivity.locationEnabled = true;
 
         onView(withId(R.id.switchLocation)).perform(click());
 
-        activityRule.getScenario().onActivity(activity -> {
-            assertFalse(RouteMyWayActivity.locationEnabled);
-        });
+        activityRule.getScenario().onActivity(activity -> assertFalse(RouteMyWayActivity.locationEnabled));
 
         onView(withId(R.id.switchLocation)).perform(click());
 
-        activityRule.getScenario().onActivity(activity -> {
-            assertTrue(RouteMyWayActivity.locationEnabled);
-        });
-    }
+        activityRule.getScenario().onActivity(activity -> assertTrue(RouteMyWayActivity.locationEnabled));
 
-    @Test
-    public void testButtonClickNavigatesToMapsActivity() {
         onView(withId(R.id.btnToApp)).perform(click());
 
         onView(withId(R.id.bottom_navigation)).check(matches(isDisplayed()));
