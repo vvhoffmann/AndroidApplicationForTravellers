@@ -60,7 +60,7 @@ public class RouteUtils {
             LatLng starting = routePoints.get(i);
             LatLng destination = routePoints.get(i + 1);
             try {
-                distance = distance + executor.submit(() -> routesHttpClient.getWalkingRoute(starting, destination)).get();
+                distance += executor.submit(() -> routesHttpClient.getWalkingRoute(starting, destination)).get();
             } catch (Exception e) {
                 e.getMessage();
             }

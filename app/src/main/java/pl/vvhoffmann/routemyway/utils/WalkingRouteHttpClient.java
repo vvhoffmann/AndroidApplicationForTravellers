@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -19,7 +20,7 @@ public class WalkingRouteHttpClient implements RoutesHttpClient {
 
     @Override
     public double getWalkingRoute(LatLng origin, LatLng destination) throws Exception {
-        String response = getPlacesAPIResponse(origin, destination);
+        String response = getRoutesAPIResponse(origin, destination);
         if (response == null)
         {
             try {
@@ -32,7 +33,7 @@ public class WalkingRouteHttpClient implements RoutesHttpClient {
     }
 
     @NonNull
-    private String getPlacesAPIResponse(LatLng origin, LatLng destination) {
+    private String getRoutesAPIResponse(LatLng origin, LatLng destination) {
         HttpURLConnection connection = getHttpUrlConnection(origin, destination);
         StringBuilder response = new StringBuilder();
 
@@ -52,23 +53,26 @@ public class WalkingRouteHttpClient implements RoutesHttpClient {
         JSONArray routes = jsonObject.getJSONArray("routes");
 
         if (routes.length() > 0) {
-            JSONObject route = routes.getJSONObject(0);
-            JSONArray legs = route.getJSONArray("legs");
-
-            JSONObject leg = legs.getJSONObject(0);
-            JSONObject distance = leg.getJSONObject("distance");
-            // W metrach
-            double distanceValue = distance.getDouble("value");
-            // Konwersja na kilometry
-            return distanceValue / 1000.0;
+            double distanceValue = parseJSONObjectToRouteLength(routes);
+            return Converter.convertMetersToKm(distanceValue);
         } else {
             throw new Exception("Brak trasy w odpowiedzi API");
         }
     }
 
+    private static double parseJSONObjectToRouteLength(JSONArray routes) throws JSONException {
+        JSONObject route = routes.getJSONObject(0);
+        JSONArray legs = route.getJSONArray("legs");
+
+        JSONObject leg = legs.getJSONObject(0);
+        JSONObject distance = leg.getJSONObject("distance");
+
+        return distance.getDouble("value");
+    }
+
     private HttpURLConnection getHttpUrlConnection(LatLng origin, LatLng destination) {
         String requestUrl = prepareRequestUrl(origin, destination);
-        HttpURLConnection connection = null;
+        HttpURLConnection connection;
 
         try {
             URL url = new URL(requestUrl);
