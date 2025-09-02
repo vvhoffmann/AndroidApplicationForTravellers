@@ -18,16 +18,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class RouteMyWayActivityUITest {
 
-    @Rule
-    public ActivityScenarioRule<RouteMyWayActivity> activityRule =
+    @Rule public ActivityScenarioRule<RouteMyWayActivity> activityRule =
             new ActivityScenarioRule<>(RouteMyWayActivity.class);
-
-    @Test
-    public void testButtonClickNavigatesToMapsActivity() {
-        onView(withId(R.id.btnToApp)).perform(click());
-
-        onView(withId(R.id.bottom_navigation)).check(matches(isDisplayed()));
-    }
 
     @Test
     public void testSwitchLocationToggleUpdatesStaticVariable() {
@@ -44,5 +36,13 @@ public class RouteMyWayActivityUITest {
         activityRule.getScenario().onActivity(activity -> {
             assertTrue(RouteMyWayActivity.locationEnabled);
         });
+    }
+
+    @Test
+    public void testButtonClickNavigatesToMapsActivity() {
+        onView(withId(R.id.btnToApp)).perform(click());
+
+        onView(withId(R.id.bottom_navigation)).check(matches(isDisplayed()));
+        onView(withId(R.id.map)).check(matches(isDisplayed()));
     }
 }

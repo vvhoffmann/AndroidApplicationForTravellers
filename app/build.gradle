@@ -80,7 +80,4 @@ dependencies {
     androidTestImplementation libs.hamcrest
     androidTestImplementation 'org.mockito:mockito-android:5.2.0'
     androidTestImplementation libs.fragment.testing.v162
-    androidTestImplementation libs.robolectric
-    
-    
 }
