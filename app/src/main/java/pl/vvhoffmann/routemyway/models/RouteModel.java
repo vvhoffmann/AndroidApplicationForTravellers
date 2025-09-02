@@ -10,18 +10,21 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.LinkedList;
 import java.util.List;
 
+import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
 import pl.vvhoffmann.routemyway.utils.HeldKarpAlgorithm;
+import pl.vvhoffmann.routemyway.utils.TSPAlgorithm;
+import pl.vvhoffmann.routemyway.utils.quasioptimalalgorithm.QuasiOptimizationAlgorithm;
 
 public class RouteModel {
-    private final LinkedList<Marker> markers;
-    private int size = 0;
+    private final List<Marker> markers;
+    private int size;
     private double distance = 0;
 
-    public LinkedList<Marker> getMarkers() {
+    public List<Marker> getMarkers() {
         return markers;
     }
 
-    public RouteModel(LinkedList<LatLng> latLngList) {
+    public RouteModel(List<LatLng> latLngList) {
         markers = new LinkedList<>();
         for (LatLng latLng : latLngList)
             markers.add(getMarkerByLatLng(latLng));
@@ -30,7 +33,8 @@ public class RouteModel {
     }
 
     private void setDistance() {
-        distance = HeldKarpAlgorithm.getDistance();
+        distance = RouteOptimizationService.usedAlgorithm == TSPAlgorithm.HELD_KARP ?
+                HeldKarpAlgorithm.getDistance() : QuasiOptimizationAlgorithm.getDistance();
     }
 
     public double getDistance() {

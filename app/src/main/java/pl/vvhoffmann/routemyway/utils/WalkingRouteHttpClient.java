@@ -57,7 +57,6 @@ public class WalkingRouteHttpClient implements RoutesHttpClient {
 
             JSONObject leg = legs.getJSONObject(0);
             JSONObject distance = leg.getJSONObject("distance");
-
             // W metrach
             double distanceValue = distance.getDouble("value");
             // Konwersja na kilometry

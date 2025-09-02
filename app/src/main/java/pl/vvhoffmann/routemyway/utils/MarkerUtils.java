@@ -47,7 +47,7 @@ public class MarkerUtils {
         return marker.getPosition();
     }
 
-    public static List<LatLng> getLatLngFromMarkers(LinkedList<Marker> markers) {
+    public static List<LatLng> getLatLngFromMarkers(List<Marker> markers) {
         List<LatLng> latLngList = new LinkedList<>();
         for (Marker marker : markers)
             latLngList.add(getLatLngFromMarker(marker));

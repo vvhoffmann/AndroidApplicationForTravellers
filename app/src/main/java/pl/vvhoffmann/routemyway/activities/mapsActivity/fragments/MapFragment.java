@@ -1,7 +1,6 @@
 package pl.vvhoffmann.routemyway.activities.mapsActivity.fragments;
 
 import static android.content.ContentValues.TAG;
-
 import static pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity.getMarkersRepository;
 
 import android.Manifest;
@@ -24,17 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import pl.vvhoffmann.routemyway.R;
-import pl.vvhoffmann.routemyway.RouteMyWayActivity;
-import pl.vvhoffmann.routemyway.config.AppConfig;
-import pl.vvhoffmann.routemyway.constants.Constants;
-import pl.vvhoffmann.routemyway.constants.Messages;
-import pl.vvhoffmann.routemyway.repositories.RouteRepository;
-import pl.vvhoffmann.routemyway.services.MapService;
-import pl.vvhoffmann.routemyway.services.RouteOptimizationService;
-import pl.vvhoffmann.routemyway.utils.PlacesUtils;
-import pl.vvhoffmann.routemyway.utils.PolylineUtils;
-
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -49,7 +37,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
-
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -70,6 +57,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import pl.vvhoffmann.routemyway.R;
+import pl.vvhoffmann.routemyway.RouteMyWayActivity;
+import pl.vvhoffmann.routemyway.config.AppConfig;
+import pl.vvhoffmann.routemyway.constants.Messages;
+import pl.vvhoffmann.routemyway.repositories.RouteRepository;
+import pl.vvhoffmann.routemyway.services.MapService;
+import pl.vvhoffmann.routemyway.utils.PlacesUtils;
+import pl.vvhoffmann.routemyway.utils.PolylineUtils;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
@@ -159,7 +155,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public void onPlaceSelected(@NonNull Place place) {
                             btnRemoveMarker.setVisibility(View.INVISIBLE);
-                            // Obsługa wyboru miejsca
                             getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(Objects.requireNonNull(place.getLatLng()), 15));
                             MarkerOptions markerOptions = new MarkerOptions()
                                     .position(place.getLatLng())
@@ -168,10 +163,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Marker marker = addMarkerToMap(markerOptions);
                             assert marker != null;
                             getMarkersRepository().addMarker(marker);
-                            if(RouteRepository.isRouteCalculated() && getMarkersRepository().getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION) {
-                                RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
-                                onResume();
-                            }
                         }
                         @Override
                         public void onError(@NonNull Status status) {
@@ -218,9 +209,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             .title(placeDescription));
 
                     getMarkersRepository().addMarker(marker);
-
-                    if(RouteRepository.isRouteCalculated() && getMarkersRepository().getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
-                        RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
                 }
             }
             btnRemoveMarker.setVisibility(View.INVISIBLE);
@@ -239,9 +227,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 getMarkersRepository().removeMarker(selectedMarker);
 
                 marker.remove();
-
-                if(RouteRepository.isRouteCalculated() && getMarkersRepository().getSize() > Constants.MINIMAL_MARKERS_COUNT_TO_PERFORM_ROUTE_OPTIMIZATION)
-                    RouteRepository.saveRoute(RouteOptimizationService.getOptimalRoute());
 
                 Log.i("Markers after remove", "Markers: " + getMarkersRepository().getDescription());
                 btnRemoveMarker.setVisibility(View.INVISIBLE);
@@ -379,9 +364,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @NonNull
     private static RectangularBounds getRectangularBounds() {
         Marker currentPositionMarker = getMarkersRepository().getCurrentPositionMarker();
-        LatLng southwestRestriction = new LatLng(currentPositionMarker.getPosition().latitude - 0.2, currentPositionMarker.getPosition().longitude - 0.2); // Lewy dolny róg
-        LatLng northeastRestriction = new LatLng(currentPositionMarker.getPosition().latitude + 0.2, currentPositionMarker.getPosition().longitude + 0.2); // Prawy górny róg
-
+        LatLng southwestRestriction = new LatLng(currentPositionMarker.getPosition().latitude - 0.2, currentPositionMarker.getPosition().longitude - 0.2);
+        LatLng northeastRestriction = new LatLng(currentPositionMarker.getPosition().latitude + 0.2, currentPositionMarker.getPosition().longitude + 0.2);
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(southwestRestriction)
                 .include(northeastRestriction)

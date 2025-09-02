@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
-import pl.vvhoffmann.routemyway.utils.PlacesUtils;
+import pl.vvhoffmann.routemyway.utils.RouteUtils;
 
 public class MarkersRepository implements IMarkersRepository {
 
@@ -76,9 +76,8 @@ public class MarkersRepository implements IMarkersRepository {
         return distances;
     }
 
-
     private void setDistances() {
-        distances = PlacesUtils.getDistanceArray();
+        distances = RouteUtils.getDistanceArray();
         areDistancesCalculated = true;
     }
 
