@@ -36,6 +36,7 @@ supportAnnotations = "28.0.0"
 cardview = "1.0.0"
 googleGmsGoogleServices = "4.4.2"
 truth = "1.1.5"
+junitJupiter = "5.8.1"
 
 [libraries]
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
@@ -72,6 +73,7 @@ runner-v150 = { module = "androidx.test:runner", version.ref = "runnerVersion" }
 support-annotations = { group = "com.android.support", name = "support-annotations", version.ref = "supportAnnotations" }
 cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -5,15 +5,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import pl.vvhoffmann.routemyway.constants.Constants;
 import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 
 public class HeldKarpAlgorithm {
-    private static final double INF = Integer.MAX_VALUE;
+    private static final double INF = Constants.MAX_VALUE;
     private static double distance = 0.0;
 
     public static LinkedList<LatLng> getTSPSolution() {
-        LinkedList<LatLng> points = MarkersRepository.getLatLngList();
-        double [][] dist = MarkersRepository.getDistanceArray();
+        LinkedList<LatLng> points = MarkersRepository.getInstance().getLatLngList();
+        double [][] dist = MarkersRepository.getInstance().getDistanceArray();
         return calculateHeldKarpSolution(points,dist);
     }
 
