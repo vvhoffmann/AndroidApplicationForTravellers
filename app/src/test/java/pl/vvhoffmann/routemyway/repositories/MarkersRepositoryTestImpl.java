@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import pl.vvhoffmann.routemyway.utils.MarkerUtils;
-import pl.vvhoffmann.routemyway.utils.PointUtils;
+import pl.vvhoffmann.routemyway.utils.quasioptimalalgorithm.PointUtils;
 
 public class MarkersRepositoryTestImpl implements IMarkersRepository{
 
