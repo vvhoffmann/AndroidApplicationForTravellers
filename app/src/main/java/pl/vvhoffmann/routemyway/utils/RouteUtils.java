@@ -13,13 +13,18 @@ import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 
 public class RouteUtils {
 
+    static RoutesHttpClient routesHttpClient = new WalkingRouteHttpClient();
+
+    public static void setRoutesHttpClientForTests(RoutesHttpClient mockClient) {
+        routesHttpClient = mockClient;
+    }
+
     public static double[][] getDistanceArray() {
         List<LatLng> points = MarkersRepository.getInstance().getLatLngList();
 
         int n = points.size();
         double[][] dist = new double[n][n];
 
-        RoutesHttpClient routesHttpClient = new WalkingRouteHttpClient();
         List<Future<Double>> results = getRoutesLengths(n, routesHttpClient, points);
 
         int index = 0;
@@ -40,11 +45,12 @@ public class RouteUtils {
         ArrayList<Future<Double>> results = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                final int row = i, col = j;
+                int row = i, col = j;
                 if(row == col)
                     results.add(executor.submit(() -> 0.0));
                 else
-                    results.add(executor.submit(() -> routesHttpClient.getWalkingRoute(points.get(row), points.get(col))));
+                    results.add(executor.submit(() ->
+                            routesHttpClient.getWalkingRoute(points.get(row), points.get(col))));
             }
         }
         executor.shutdown();
@@ -52,7 +58,7 @@ public class RouteUtils {
     }
 
     public static double getRouteLength(List<LatLng> routePoints) {
-        RoutesHttpClient routesHttpClient = new WalkingRouteHttpClient();
+        routesHttpClient = new WalkingRouteHttpClient();
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
         double distance =0.0;
