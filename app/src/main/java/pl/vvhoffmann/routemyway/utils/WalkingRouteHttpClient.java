@@ -10,9 +10,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import pl.vvhoffmann.routemyway.config.AppConfig;
 
@@ -93,5 +96,40 @@ public class WalkingRouteHttpClient implements RoutesHttpClient {
                 + "&destination=" + destination.latitude + "," + destination.longitude
                 + "&mode=walking"
                 + "&key=" + AppConfig.GOOGLE_MAPS_API_KEY;
+    }
+///-----------
+    public static String getHttpResponse(String routeUrl) throws IOException {
+        URL url = new URL(routeUrl);
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+
+        return getParsedResponse(httpURLConnection.getInputStream());
+    }
+
+    private static String getParsedResponse(InputStream input) throws IOException{
+        StringBuilder response = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+
+        String line;
+        while ((line = reader.readLine()) != null)
+            response.append(line);
+
+        reader.close();
+        return response.toString();
+    }
+
+    public static List<LatLng> getPolylinePoints(String response) throws JSONException {
+
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONArray routes = jsonResponse.getJSONArray("routes");
+
+        if(routes.length() > 0) {
+            JSONObject route = routes.getJSONObject(0);
+            JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
+            String encodedPolyline = overviewPolyline.getString("points");
+
+            return PolylineUtils.decodePolyline(encodedPolyline);
+        }
+        return new ArrayList<>();
     }
 }

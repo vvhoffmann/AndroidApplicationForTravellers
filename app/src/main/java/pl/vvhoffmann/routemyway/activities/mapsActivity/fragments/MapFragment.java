@@ -42,17 +42,6 @@ import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -65,7 +54,7 @@ import pl.vvhoffmann.routemyway.constants.Messages;
 import pl.vvhoffmann.routemyway.repositories.RouteRepository;
 import pl.vvhoffmann.routemyway.services.MapService;
 import pl.vvhoffmann.routemyway.utils.PlacesUtils;
-import pl.vvhoffmann.routemyway.utils.PolylineUtils;
+import pl.vvhoffmann.routemyway.utils.WalkingRouteHttpClient;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationClient;
@@ -251,7 +240,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume: ");
-        if(RouteRepository.isRouteCalculated()){
+        if(RouteRepository.getInstance().isRouteCalculated()){
             displayRoute();
         }
         else{
@@ -261,7 +250,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void displayRoute() {
-        getRouteFromDirectionsAPI();
+        drawRouteOnMapByRoutesAPIResponse();
         btnRemoveMarker.setVisibility(View.INVISIBLE);
         btnRedirectWithGoogleMaps.setVisibility(View.VISIBLE);
 
@@ -275,56 +264,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Log.i(TAG, "onResume: Route drawn");
     }
 
-    private void getRouteFromDirectionsAPI() {
+    private void drawRouteOnMapByRoutesAPIResponse() {
         String routeUrl = MapService.getRouteUrl();
 
-        // Wykonanie zapytania w osobnym wątku
         new Thread(() -> {
             try {
-                String httpResponse = getHttpResponse(routeUrl);
-
-                List<LatLng> polylinePoints = getPolylinePoints(httpResponse);
+                String httpResponse = WalkingRouteHttpClient.getHttpResponse(routeUrl);
+                List<LatLng> polylinePoints = WalkingRouteHttpClient.getPolylinePoints(httpResponse);
                 if(!polylinePoints.isEmpty())
                     requireActivity().runOnUiThread(() -> drawRoute(polylinePoints));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
-    }
-
-    private static String getHttpResponse(String routeUrl) throws IOException {
-        URL url = new URL(routeUrl);
-        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-        httpURLConnection.setRequestMethod("GET");
-
-        return getParsedResponse(httpURLConnection.getInputStream());
-    }
-
-    private static String getParsedResponse(InputStream input) throws IOException{
-        StringBuilder response = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-
-        String line;
-        while ((line = reader.readLine()) != null)
-            response.append(line);
-
-        reader.close();
-        return response.toString();
-    }
-
-    private static List<LatLng> getPolylinePoints(String response) throws JSONException {
-
-        JSONObject jsonResponse = new JSONObject(response);
-        JSONArray routes = jsonResponse.getJSONArray("routes");
-
-        if(routes.length() > 0) {
-            JSONObject route = routes.getJSONObject(0);
-            JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
-            String encodedPolyline = overviewPolyline.getString("points");
-
-            return PolylineUtils.decodePolyline(encodedPolyline);
-        }
-        return new ArrayList<>();
     }
 
     private void drawRoute(List<LatLng> polylinePoints) {
