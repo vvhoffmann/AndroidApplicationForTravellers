@@ -1,9 +1,11 @@
 package pl.vvhoffmann.routemyway.services;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -77,5 +79,14 @@ public class MapServiceTest {
                 "&mode=walking" +
                 "&key=" + AppConfig.GOOGLE_MAPS_API_KEY;
         assertEquals(expectedUrl, googleMapsRedirectUrl);
+    }
+
+    @Test
+    public void should_set_map_in_mapservice() {
+        // when
+        MapService.setMap(mock(GoogleMap.class));
+
+        // then
+        assertNotNull(MapService.getMap());
     }
 }
