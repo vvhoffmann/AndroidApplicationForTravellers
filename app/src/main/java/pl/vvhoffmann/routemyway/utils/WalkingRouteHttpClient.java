@@ -33,7 +33,7 @@ public class WalkingRouteHttpClient implements RoutesHttpClient {
     }
 
     @NonNull
-    private String getRoutesAPIResponse(LatLng origin, LatLng destination) {
+    String getRoutesAPIResponse(LatLng origin, LatLng destination) {
         HttpURLConnection connection = getHttpUrlConnection(origin, destination);
         StringBuilder response = new StringBuilder();
 
