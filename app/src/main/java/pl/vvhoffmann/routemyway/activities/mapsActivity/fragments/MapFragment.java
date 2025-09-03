@@ -247,7 +247,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragment.setLocationRestriction(getRectangularBounds());
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -386,4 +385,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

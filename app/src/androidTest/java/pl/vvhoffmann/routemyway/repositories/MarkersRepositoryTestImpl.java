@@ -30,6 +30,7 @@ public class MarkersRepositoryTestImpl implements IMarkersRepository{
             size++;
         }
         MARKERS_REPOSITORY = this;
+
     }
 
     public static MarkersRepositoryTestImpl getInstance() {
