@@ -2,29 +2,44 @@ package pl.vvhoffmann.routemyway.repositories;
 
 import pl.vvhoffmann.routemyway.models.RouteModel;
 
-public class RouteRepository {
-    private static RouteModel route;
-    private static boolean isRouteCalculated = false;
+public class RouteRepository implements IRouteRepository {
 
-    public static void saveRoute(RouteModel newRoute) {
+    private static IRouteRepository routeRepository = new RouteRepository();
+    private RouteModel route;
+    private boolean isRouteCalculated = false;
+
+    public static IRouteRepository getInstance() {
+        return routeRepository;
+    }
+
+    public void setInstanceForTests(IRouteRepository instance) {
+        routeRepository = instance;
+    }
+
+    private RouteRepository() {}
+
+    @Override
+    public void saveRoute(RouteModel newRoute) {
         route = newRoute;
         isRouteCalculated = true;
     }
 
-    public static RouteModel getRoute() {
+    @Override
+    public RouteModel getRoute() {
         if (!isRouteCalculated) {
             throw new IllegalStateException("Route not calculated yet");
         }
         return route;
     }
 
-    public static boolean isRouteCalculated() {
+    @Override
+    public boolean isRouteCalculated() {
         return isRouteCalculated;
     }
 
-    public static void resetRoute() {
+    @Override
+    public void resetRoute() {
         route = null;
         isRouteCalculated = false;
     }
-
 }

@@ -22,7 +22,7 @@ public class RouteOptimizationService {
             usedAlgorithm = TSPAlgorithm.QUASI_OPTIMAL;
             routeModel = new RouteModel(QuasiOptimizationAlgorithm.getTSPSolution());
         }
-        RouteRepository.saveRoute(routeModel);
+        RouteRepository.getInstance().saveRoute(routeModel);
         return routeModel;
     }
 }
