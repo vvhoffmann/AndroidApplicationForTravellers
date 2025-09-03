@@ -33,12 +33,11 @@ import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
 public class MapFragmentUITest {
 
     private ActivityScenario<MapsActivity> scenario;
-    private Activity mActivity;
+
 
     @Before
     public void setUp() {
         scenario = ActivityScenario.launch(MapsActivity.class);
-        scenario.onActivity(activity -> mActivity = activity);
     }
 
     @Test
