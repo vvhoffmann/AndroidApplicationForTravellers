@@ -12,7 +12,7 @@ public class RouteRepository implements IRouteRepository {
         return routeRepository;
     }
 
-    public void setInstanceForTests(IRouteRepository instance) {
+    public static void setInstanceForTests(IRouteRepository instance) {
         routeRepository = instance;
     }
 

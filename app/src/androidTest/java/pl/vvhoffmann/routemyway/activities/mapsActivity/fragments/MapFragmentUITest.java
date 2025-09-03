@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
-import android.app.Activity;
 import android.view.View;
 
 import androidx.test.core.app.ActivityScenario;
@@ -33,7 +32,6 @@ import pl.vvhoffmann.routemyway.activities.mapsActivity.MapsActivity;
 public class MapFragmentUITest {
 
     private ActivityScenario<MapsActivity> scenario;
-
 
     @Before
     public void setUp() {

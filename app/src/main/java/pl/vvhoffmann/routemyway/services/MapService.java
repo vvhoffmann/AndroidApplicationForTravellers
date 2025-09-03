@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class MapService {
 
     public static String getGoogleMapsRedirectUrl() {
         LatLng origin = MarkersRepository.getInstance().getCurrentPositionMarker().getPosition();
-        List<LatLng> waypoints = MarkerUtils.getLatLngFromMarkers(RouteRepository.getRoute().getMarkers());
+        List<LatLng> waypoints = MarkerUtils.getLatLngFromMarkers(RouteRepository.getInstance().getRoute().getMarkers());
         return buildGoogleMapsRedirectUrl(origin, waypoints);
     }
 
@@ -47,7 +46,7 @@ public class MapService {
 
     @NonNull
     public static String getRouteUrl() {
-        LinkedList<LatLng> routePoints = RouteRepository.getRoute().getMarkers()
+        LinkedList<LatLng> routePoints = RouteRepository.getInstance().getRoute().getMarkers()
                 .stream()
                 .map(Marker::getPosition)
                 .collect(LinkedList::new, LinkedList::add, LinkedList::addAll);

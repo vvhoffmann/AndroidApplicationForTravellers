@@ -7,6 +7,11 @@ public class RoutesRepositoryTestImpl implements IRouteRepository {
     private RouteModel route;
     private boolean isRouteCalculated = false;
 
+    public RoutesRepositoryTestImpl(RouteModel initialRoute) {
+        this.route = initialRoute;
+        this.isRouteCalculated = initialRoute != null;
+    }
+
     @Override
     public void saveRoute(RouteModel newRoute) {
         route = newRoute;
