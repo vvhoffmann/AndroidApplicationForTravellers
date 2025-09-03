@@ -133,5 +133,4 @@ public class MapsActivity extends FragmentActivity {
     public static IMarkersRepository getMarkersRepository() {
         return MarkersRepository.getInstance();
     }
-
 }

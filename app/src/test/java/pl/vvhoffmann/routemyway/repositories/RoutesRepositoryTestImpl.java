@@ -2,21 +2,15 @@ package pl.vvhoffmann.routemyway.repositories;
 
 import pl.vvhoffmann.routemyway.models.RouteModel;
 
-public class RouteRepository implements IRouteRepository {
+public class RoutesRepositoryTestImpl implements IRouteRepository {
 
-    private static IRouteRepository routeRepository = new RouteRepository();
     private RouteModel route;
     private boolean isRouteCalculated = false;
 
-    public static IRouteRepository getInstance() {
-        return routeRepository;
+    public RoutesRepositoryTestImpl(RouteModel initialRoute) {
+        this.route = initialRoute;
+        this.isRouteCalculated = initialRoute != null;
     }
-
-    public static void setInstanceForTests(IRouteRepository instance) {
-        routeRepository = instance;
-    }
-
-    private RouteRepository() {}
 
     @Override
     public void saveRoute(RouteModel newRoute) {

@@ -14,15 +14,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Rozbudowane testy instrumentacyjne MapFragment z użyciem FragmentScenario.
- */
 @RunWith(AndroidJUnit4.class)
 public class MapFragmentInstrumentedTest {
 
-    /**
-     * Testuje, czy fragment się uruchamia i zawiera mapę oraz autouzupełnianie.
-     */
     @Test
     public void fragmentLaunchesAndUIElementsArePresent() {
         FragmentScenario<MapFragment> scenario = FragmentScenario.launchInContainer(MapFragment.class);
@@ -33,11 +27,8 @@ public class MapFragmentInstrumentedTest {
         });
     }
 
-    /**
-     * Testuje, czy metoda drawRoute działa bez wyjątku dla przykładowych punktów (bez asercji na mapie).
-     */
     @Test
-    public void drawRoute_doesNotCrash() throws Exception {
+    public void should_drawRoute_does_not_throw_exception() {
         FragmentScenario<MapFragment> scenario = FragmentScenario.launchInContainer(MapFragment.class);
         List<LatLng> points = Arrays.asList(
                 new LatLng(52.1, 21.0),
@@ -55,15 +46,12 @@ public class MapFragmentInstrumentedTest {
         });
     }
 
-    /**
-     * Testuje, czy po Resume fragment odświeża markery lub rysuje trasę.
-     */
+
     @Test
-    public void fragment_onResume_refreshesMarkersOrDrawsRoute() {
+    public void should_refresh_markers_and_draw_route_onResume() {
         FragmentScenario<MapFragment> scenario = FragmentScenario.launchInContainer(MapFragment.class);
         scenario.moveToState(Lifecycle.State.RESUMED);
         scenario.onFragment(fragment -> {
-            // Sprawdź logikę odświeżania: możesz podmienić repozytoria mockami i sprawdzić efekty uboczne
             assertNotNull(fragment);
         });
     }

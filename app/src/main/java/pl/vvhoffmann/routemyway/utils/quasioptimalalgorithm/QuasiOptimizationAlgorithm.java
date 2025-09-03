@@ -150,7 +150,7 @@ public class QuasiOptimizationAlgorithm {
         distance = RouteUtils.getRouteLength(resultPath);
     }
 
-    public static List<LatLng> returnRoundPath() {
+    private static List<LatLng> returnRoundPath() {
         resultPath.add(resultPath.get(0));
         return resultPath;
     }

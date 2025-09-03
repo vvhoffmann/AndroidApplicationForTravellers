@@ -62,7 +62,7 @@ public class RouteFragment extends Fragment {
             btnEditPoints.setVisibility(View.VISIBLE);
         }
         else
-            RouteRepository.resetRoute();
+            RouteRepository.getInstance().resetRoute();
 
         btnShowMap.setOnClickListener(v -> ((MapsActivity) requireActivity()).replaceFragment(MapsActivity.getMapFragment()));
         btnEditPoints.setOnClickListener(v -> ((MapsActivity) requireActivity()).replaceFragment(MapsActivity.getMarkersListFragment()));

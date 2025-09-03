@@ -10,13 +10,6 @@ import pl.vvhoffmann.routemyway.repositories.MarkersRepository;
 
 public class MarkerUtils {
 
-    // dawniej createStringFromMarker(Marker marker)
-    public static String createMarkerDescription(Marker marker) {
-        return  marker.getTitle() + "\n[ "
-                + marker.getPosition().latitude + " , "
-                + marker.getPosition().longitude + " ]";
-    }
-
     public static Marker createMarkerFromString(String text) {
 
         if(!text.contains("]"))

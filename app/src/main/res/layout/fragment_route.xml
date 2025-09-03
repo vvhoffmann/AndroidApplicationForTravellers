@@ -8,7 +8,6 @@
     android:padding="12dp"
 >
 
-    <!-- Title and Calculate Button -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
@@ -20,7 +19,6 @@
         android:textAlignment="center"
         android:textSize="21sp" />
 
-    <!-- ListView with result markers order-->
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"

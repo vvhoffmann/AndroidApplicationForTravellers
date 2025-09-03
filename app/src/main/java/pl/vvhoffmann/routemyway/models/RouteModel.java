@@ -2,8 +2,6 @@ package pl.vvhoffmann.routemyway.models;
 
 import static pl.vvhoffmann.routemyway.utils.MarkerUtils.getMarkerByLatLng;
 
-import androidx.annotation.NonNull;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -43,14 +41,5 @@ public class RouteModel {
 
     public int getSize() {
         return size;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder("Route{markers= ");
-        for (Marker marker : markers)
-            result.append(marker.getTitle()).append(", [").append(marker.getPosition()).append("] ");
-        return result.toString();
     }
 }
