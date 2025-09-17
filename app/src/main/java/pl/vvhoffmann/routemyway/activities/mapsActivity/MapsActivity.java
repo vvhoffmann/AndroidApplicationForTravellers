@@ -43,17 +43,12 @@ public class MapsActivity extends FragmentActivity {
         // Inicjalizacja fragmentów
         initializeFragments();
 
-        // Ustawienie początkowego fragmentu
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null)
             replaceFragment(mapFragment);
-        }
 
-        // Ustawienie słuchacza nawigacji
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
-
-        // Sprawdzenie uprawnień lokalizacji
         checkLocationPermission();
     }
 
@@ -72,10 +67,9 @@ public class MapsActivity extends FragmentActivity {
         executorService.execute(() -> getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, selectedFragment)
-                .commitAllowingStateLoss()); // Uruchomienie na osobnym wątku
+                .commitAllowingStateLoss());
     }
 
-    // Pomocnicza metoda, aby uniknąć powtórnych zmian na tym samym fragmencie
     private Fragment getCurrentFragment() {
         return getSupportFragmentManager().findFragmentById(R.id.fragment_container);
     }
@@ -113,12 +107,12 @@ public class MapsActivity extends FragmentActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        executorService.shutdown(); // Zamknięcie ExecutorService, aby uniknąć wycieków pamięci
+        executorService.shutdown();
     }
     public void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null) // Pozwala wrócić do poprzedniego ekranu
+                .addToBackStack(null)
                 .commit();
     }
 

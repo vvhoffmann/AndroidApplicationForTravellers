@@ -22,7 +22,7 @@ public class RouteMyWayActivityUITest {
             new ActivityScenarioRule<>(RouteMyWayActivity.class);
 
     @Test
-    public void testRouteMyWayActivityUI() {
+    public void should_RouteMyWayActivityUIComponents_work_correctly() {
         onView(withId(R.id.tvTitle)).check(matches(isDisplayed()));
         onView(withId(R.id.tvDesc)).check(matches(isDisplayed()));
         onView(withId(R.id.btnToApp)).check(matches(isDisplayed()));

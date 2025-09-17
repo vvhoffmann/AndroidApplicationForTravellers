@@ -26,7 +26,7 @@ public class MapsActivityUITest {
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Test
-    public void testBottomNavigationSwitchesFragments() {
+    public void should_bottom_navigation_switches_fragments_correctly() {
         ActivityScenario<MapsActivity> scenario = ActivityScenario.launch(MapsActivity.class);
 
         scenario.onActivity(activity -> {
