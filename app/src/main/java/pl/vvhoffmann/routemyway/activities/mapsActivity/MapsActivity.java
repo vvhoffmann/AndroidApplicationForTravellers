@@ -40,7 +40,6 @@ public class MapsActivity extends FragmentActivity {
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Inicjalizacja fragmentów
         initializeFragments();
 
         if (savedInstanceState == null)

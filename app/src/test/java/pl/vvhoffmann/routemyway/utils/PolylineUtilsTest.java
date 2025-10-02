@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PolylineUtilsTest {
     @Test
-    public void should_decodePolyline_decodes_correctly() {
+    public void should_return_decoded_polyline() {
         //given
         String encoded = "knz}Hi`j_CP\\Zc@JVPYdBaCHOd@jADBFCXXZUhA{A`@p@ITKXa@|Al@wBXw@LWFGv@bCTn@^rAdBjILj@L@b@PPDFXtCuB|AgAh@c@f@w@f@gAJWKVg@fAg@v@i@b@}AfA}@uDaBqESm@sD|DmCpCg@b@_CxBsChCs@p@c@d@{@jAa@n@{@tAS\\Sa@R`@R]z@uA`@o@z@kAeA}Ew@iDdEgGKW[b@Q]";
         //when
