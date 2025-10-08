@@ -60,7 +60,7 @@
         android:padding="25dp">
 
         <Button
-            android:id="@+id/buttonShowMap"
+            android:id="@+id/btnShowMap"
             android:layout_width="180dp"
             android:layout_height="60dp"
             android:layout_margin="4dp"
