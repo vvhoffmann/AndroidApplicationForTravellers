@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +22,13 @@ public class RouteMyWayActivityUITest {
 
     @Rule public ActivityScenarioRule<RouteMyWayActivity> activityRule =
             new ActivityScenarioRule<>(RouteMyWayActivity.class);
+
+    @Rule
+    public GrantPermissionRule permissionRule =
+            GrantPermissionRule.grant(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+            );
 
     @Test
     public void should_RouteMyWayActivityUIComponents_work_correctly() {

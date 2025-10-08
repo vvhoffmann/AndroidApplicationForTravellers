@@ -8,26 +8,29 @@ RouteMyWayActivity
 
 MapsActivity
 
-3) MapFragment
+1) MapFragment
 -dodawanie punktów do MarkersRepository poprzez klikanie punktów na Mapie
 -możliwość usunięcia punktu z mapy i MarkersRepository jednocześnie poprzez kliknięcie na istniejący punkt i następnie przycisku "Usuń marker"
 
-4) Zmiana fragmentu na MarkersListFragment
+2) Zmiana fragmentu na MarkersListFragment
 -wyświetlona lista wszystkich punktów
+-wyświtlone wszystkie potrzebne komponenty
+
+3)
 -wybór punktu klinknięciem
--wybór innego punktu następnym klinknięciem
 -usuwanie wybranego punktu z MarkersRepository przyciskiem Usuń Marker
 
-5) Zmiana fragmentu na RouteFragment
+4) Zmiana fragmentu na RouteFragment
 -wyswietlona lista punktów powiększona o punkt początkowy na końcu trasy
 -wyświetlona obliczona długość trasy
 
+5)
+-kliknięcie przycisku "Edytuj punkty" -> przeniesienie do ListFragment
+
+6)
 -kliknięcie przycisku "Pokaż trasę na mapie" -> przeniesienie do MapFragment
 -pokazana trasa na mapie
 -możliwość skorzystania z przycisku "Nawiguj z google maps", który przekierowuje do aplikacji Google Maps
 
--kliknięcie przycisku "Edytuj Punkty" -> przeniesienie do MarkersListFragment
-
-6) Test obu użytych algorytmów w zależności od ilości punktów
-
 7) Zmiana fragmentu na InformationFragment
+

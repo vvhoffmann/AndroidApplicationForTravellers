@@ -76,7 +76,7 @@ public class RouteFragment extends Fragment {
 
     private void initializeUIComponents(View view) {
         listView = view.findViewById(R.id.list_view);
-        btnShowMap = view.findViewById(R.id.buttonShowMap);
+        btnShowMap = view.findViewById(R.id.btnShowMap);
         btnEditPoints = view.findViewById(R.id.btnEditPoints);
         tvTitle = view.findViewById(R.id.tvTitle);
         tvResultTitle = view.findViewById(R.id.tvResultTitle);

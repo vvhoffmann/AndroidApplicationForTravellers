@@ -1,7 +1,6 @@
 package pl.vvhoffmann.routemyway.utils;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -52,12 +51,12 @@ public class RouteUtilsTest {
         assertNotNull(distanceArray);
         for(int i=0; i<distanceArray.length; i++) {
             for(int j=0; j<distanceArray[i].length; j++) {
-                if(i == j)
+                if(i == j){
                     assertEquals(0.0, distanceArray[i][j]);
-                else
-                    assertEquals(5.0, distanceArray[i][j]);
+                    continue;
+                }
+                assertEquals(5.0, distanceArray[i][j]);
             }
         }
     }
-
 }
